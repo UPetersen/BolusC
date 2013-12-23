@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2061" systemVersion="12D78" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3389" systemVersion="12E55" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Event" representedClassName="Event">
         <attribute name="basalDosis" optional="YES" attributeType="Double" syncable="YES"/>
         <attribute name="bloodSugar" optional="YES" attributeType="Double" syncable="YES"/>
@@ -7,24 +7,26 @@
         <attribute name="carb" optional="YES" attributeType="Double" syncable="YES"/>
         <attribute name="chu" optional="YES" attributeType="Double" syncable="YES"/>
         <attribute name="chuBolus" optional="YES" attributeType="Double" syncable="YES"/>
-        <attribute name="chuFactor" optional="YES" attributeType="Double" defaultValueString="0.7" syncable="YES"/>
+        <attribute name="chuFactor" optional="YES" attributeType="Double" defaultValueString="1" syncable="YES"/>
         <attribute name="comment" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="correctionBolus" optional="YES" attributeType="Double" syncable="YES"/>
         <attribute name="correctionDivisor" optional="YES" attributeType="Double" defaultValueString="40" syncable="YES"/>
+        <attribute name="dayString" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
         <attribute name="energy" optional="YES" attributeType="Double" syncable="YES"/>
         <attribute name="fat" optional="YES" attributeType="Double" syncable="YES"/>
         <attribute name="fpu" optional="YES" attributeType="Double" syncable="YES"/>
         <attribute name="fpuBolus" optional="YES" attributeType="Double" syncable="YES"/>
-        <attribute name="fpuFactor" optional="YES" attributeType="Double" defaultValueString="0.7" syncable="YES"/>
+        <attribute name="fpuFactor" optional="YES" attributeType="Double" defaultValueString="1" syncable="YES"/>
         <attribute name="protein" optional="YES" attributeType="Double" syncable="YES"/>
         <attribute name="shortBolus" optional="YES" attributeType="Double" syncable="YES"/>
         <attribute name="timeStamp" optional="YES" attributeType="Date">
             <userInfo/>
         </attribute>
         <attribute name="useBreadUnits" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Double" syncable="YES"/>
         <userInfo/>
     </entity>
     <elements>
-        <element name="Event" positionX="0" positionY="0" width="128" height="330"/>
+        <element name="Event" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>
