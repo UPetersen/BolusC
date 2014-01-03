@@ -14,6 +14,7 @@
 #import "DetailViewController.h"
 #import "NSNumber+UPNumberFormats.h"
 #import "TVCell.h"
+#import "DiaryTableViewCell.h"
 #import "AppDelegate.h"
 
 //#define VERBOSE
@@ -25,12 +26,24 @@
 @property (strong,nonatomic) NSNumberFormatter *numberFormatter2SigDigits;
 @property (strong,nonatomic) NSNumberFormatter *numberFormatter3SigDigits;
 @property (strong,nonatomic) NSDateFormatter *dateTimeFormatter;
+@property (strong,nonatomic) NSIndexPath *cellAtIndexPathRecentlyChanged; // nil, if none was recently changed
+
+@property (strong, nonatomic) NSDateFormatter *dateFormatterForComparison;
+@property (strong, nonatomic) NSDateFormatter *dateFormatterForAnyDayInThePast;
+@property (strong, nonatomic) NSDateFormatter *dateFormatterForTheDayBeforeYesterday;
+@property (strong, nonatomic) NSDateFormatter *dateFormatterForYesterday;
+@property (strong, nonatomic) NSDateFormatter *dateFormatterForToday;
+@property (strong, nonatomic) NSDateFormatter *dateFormatterForTomorrow;
+@property (strong, nonatomic) NSDateFormatter *dateFormatterForTheDayAfterTomorrow;
+@property (strong, nonatomic) NSDateFormatter *dateFormatterForAnyDayInTheFuture;
 
 
 - (void)configureCell:(TVCell *)cell atIndexPath:(NSIndexPath *)indexPath;
 - (void)configureCell2:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath;
+- (void)configureCell3:(DiaryTableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath;
 - (void)saveContext:(NSManagedObjectContext *)context;
 - (UIColor *)colorForTimeOfDayFromDate:(NSDate *)theDate;
+
 
 @end
 
@@ -51,11 +64,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    // TODO, die zwei Zeilen wieder löschen
-//    self.tableView.delegate = self;
-//    self.tableView.dataSource = self;
-    
     
     // Edit-Button to the left
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
@@ -97,13 +105,22 @@
 }
 
 -(void) viewWillAppear:(BOOL)animated {
-    [self.tableView reloadData];  // Some cells did cut of content (i.e. ended with "..."), trying to avoid this by reloading
     
+    [super viewWillAppear:animated];
+
+//    [self.tableView reloadData];  // Some cells did cut of content (i.e. ended with "..."), trying to avoid this by reloading
     
+//    if(self.cellAtIndexPathRecentlyChanged) {
+//        [self.tableView endUpdates];
+//        [self configureCell:[self.tableView cellForRowAtIndexPath:self.cellAtIndexPathRecentlyChanged]
+//                atIndexPath:self.cellAtIndexPathRecentlyChanged];
+//        self.cellAtIndexPathRecentlyChanged = nil;
     
+//    }
     
+
     
-    
+
     
     
 /*
@@ -152,9 +169,14 @@
 */
 }
 
-//-(void)viewWillDisappear:(BOOL)animated {
-//    [self saveContext];  // Save context, so other viewControllers have most current data
-//}
+-(void) viewDidAppear:(BOOL)animated {
+#ifdef VERBOSE
+    NSLog(@"1 self %@", self.description);
+    NSLog(@"2 self.navigationController %@", self.navigationController.description);
+    NSLog(@"3 self.navigationController.topViewController %@", self.navigationController.topViewController);
+    NSLog(@"4 isUndoRegistrationEnabled %d", self.fetchedResultsController.managedObjectContext.undoManager.isUndoRegistrationEnabled);
+#endif
+}
 
 
 - (void)didReceiveMemoryWarning
@@ -163,24 +185,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-
-// Wichtige Routine, die an die Daten anzupassen ist. Hier wird ein neues Datenelement (also eine Zeile) den "Core Data"-Daten hinzugefügt.
-// wird vom segue aufgerufen, der wiederum aufgeruffen wurde, wenn der Add-Button gedrückt wurde (siehe viewDidLoad).
-// Hier gibt es keine Tabellen- oder Zeilen-Information, es wird einfach eine neues Datenbank-Objekt erzeugt
-//- (void)insertNewObject:(id)sender // So ursprünglich vom Template. Richtig, wenn im gleichen View geblieben wird
-- (Event *)insertNewObject  // So für sofortigen Sprung über den Segue in den DetailViewController
-{
-    NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];  // Erzeugt ein Object context, das mit dem property managedObjectContext belegt wird
-    NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];     // Erzeugt ein EntityDescription
-
-    // Create an undo manager for the current context (the object created later carries the context information as a property, and thus also the undo manager)
-    [context setUndoManager:[[NSUndoManager alloc] init]];
-    [context.undoManager beginUndoGrouping];
-    
-    // Create a new object in the database (will be really saved to the database, when the managedObjectContext is saved)
-    Event *newEvent = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:context];
-    return newEvent;
-}
 
 #pragma mark - Table View
 
@@ -203,29 +207,43 @@
 // Gibt für eine Tabellenzeile (und weil dies hier für jede einzelne aufgerufen wird) vor, wie der Inhalt auszusehen hat. Ist also die Verbindung zwischend den Daten und der Tabellenanzeige. 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //  A C H T U N G:  Use this line of code for iOS 6
-//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-//    //  A C H T U N G  And use this line of code for iOS 5
-//    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-//
-//    // Für die eigentliche Konfiguration wurde eine eigene Methode erstell, siehe ganz unten
-//    [self configureCell:cell atIndexPath:indexPath];
 
-#define TABLE_VIEW_CELL_STYLE_IS_OLD YES
+#define TABLE_VIEW_CELL_STYLE 2
     
-    if (NO) {
+    if (TABLE_VIEW_CELL_STYLE == 0) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
         [self configureCell2:cell atIndexPath:indexPath];
         return cell;
-    } else {
+    } else if (TABLE_VIEW_CELL_STYLE == 1){
         // TODO: Use custom cells, later to be put specified in more detail
         //UITableViewCell *cellWithComment = [tableView dequeueReusableCellWithIdentifier:@"Cell with comment" forIndexPath:indexPath];
         
-        TVCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell with comment" forIndexPath:indexPath];
+        TVCell *cell = (TVCell *)[tableView dequeueReusableCellWithIdentifier:@"Cell with comment" forIndexPath:indexPath];
         [self configureCell:cell atIndexPath:indexPath];
+        return cell;
+    } else {
+#ifdef VERBOSE
+        NSLog(@"IndexPath %@", indexPath.description);
+#endif
+        DiaryTableViewCell *cell = (DiaryTableViewCell* )[tableView dequeueReusableCellWithIdentifier:@"Diary Table View Cell" forIndexPath:indexPath];
+#ifdef VERBOSE
+        NSLog(@"in cellForRowAtIndexPath...");
+#endif
+        [self configureCell3:cell atIndexPath:indexPath];
+        
+        // Inset mit Lazy Getter in Property auslagern
+        UIEdgeInsets e = UIEdgeInsetsMake(0, 30, 0, 30);
+        cell.separatorInset = e;
         return cell;
     }
 }
+
+-(void) configureCell3:(DiaryTableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+    Event *event = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    cell.event = event;
+    [cell redisplay];
+}
+
 - (void)configureCell:(TVCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     
     Event *event = [self.fetchedResultsController objectAtIndexPath:indexPath];
@@ -381,38 +399,35 @@
 //
 // section title: this is the date (i.e. just days)
 //
+
+//TODO: hier geht viel zeit verloren in den date formattern, bzw. deren Anwendung. Überarbeiten könnte sich lohnen.
 - (NSString *) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     id <NSFetchedResultsSectionInfo> theSection = [self.fetchedResultsController sections][section];
     
     // Setion information derives from an event's daystring (transient propertiy in the core data base), which is a string representing the number year * 10000 + month * 100 + day.
     
     // section date (just the day), therefore convert section name, which is a string (such as "20130609") to a NSDate object
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyyMMdd"];                          // Format with days only, necessary to compare days
-
     NSDate *sectionDayDate = [[NSDate alloc] init];
-    sectionDayDate = [dateFormatter dateFromString:[theSection name]];      // section date as NSDate object containing just days (derived from section name string, such as "2013-06-08")
+    sectionDayDate = [self.dateFormatterForComparison dateFromString:[theSection name]];      // section date as NSDate object containing just days (derived from section name string, such as "2013-06-08")
     
-    NSString *todayString = [dateFormatter stringFromDate:[NSDate date]];   // Current date as string with days only (such as "2013-06-09")
-    NSDate *todayDayDate = [NSDate new];                                  
-   todayDayDate = [dateFormatter dateFromString:todayString];               // Current date as NSDate object with days only (derived from the string)
+    NSString *todayString = [self.dateFormatterForComparison stringFromDate:[NSDate date]];   // Current date as string with days only (such as "2013-06-09")
+    NSDate *todayDayDate = [NSDate new];
+    todayDayDate = [self.dateFormatterForComparison dateFromString:todayString];               // Current date as NSDate object with days only (derived from the string)
 
     // Time intervall between section date and current date (i.e. today)
     NSTimeInterval time = [sectionDayDate timeIntervalSinceDate:todayDayDate];  // time intervall as NSTimeIntervall (which is a double)
     int days = time / 86400;                                                    // time intervall in days
     
     // create String for each section
-    if (days < -2)       { [dateFormatter setDateFormat:@"EEEE, d. LLLL yyyy"];                 // any day in the past (before the day before yesterday)
-    } else if (days <-1) { [dateFormatter setDateFormat:@"'Vorgestern', EEEE, d. LLLL yyyy"];   // day before yesterday
-    } else if (days < 0) { [dateFormatter setDateFormat:@"'Gestern', EEEE, d. LLLL yyyy"];      // yesterday
-    } else if (days < 1) { [dateFormatter setDateFormat:@"'Heute', EEEE, d. LLLL yyyy"];        // today
-    } else if (days < 2) { [dateFormatter setDateFormat:@"'Morgen', EEEE, d. LLLL yyyy"];       // tomorrow
-    } else if (days < 3) { [dateFormatter setDateFormat:@"'Übermorgen', EEEE, d. LLLL yyyy"];   // day after tomorrow
-    } else               { [dateFormatter setDateFormat:@"EEEE, d. LLLL yyyy"];                 // any day thereafter in the future
-    }
-    
     NSString *titleString = [[NSString alloc] init];
-    titleString = [dateFormatter stringFromDate:sectionDayDate];
+    if (days < -2)       { titleString = [self.dateFormatterForAnyDayInThePast       stringFromDate:sectionDayDate]; // any day in the past (before the day before yesterday)
+    } else if (days <-1) { titleString = [self.dateFormatterForTheDayBeforeYesterday stringFromDate:sectionDayDate]; // day before yesterday
+    } else if (days < 0) { titleString = [self.dateFormatterForYesterday             stringFromDate:sectionDayDate]; // yesterday
+    } else if (days < 1) { titleString = [self.dateFormatterForToday                 stringFromDate:sectionDayDate]; // today
+    } else if (days < 2) { titleString = [self.dateFormatterForTomorrow              stringFromDate:sectionDayDate]; // tomorrow
+    } else if (days < 3) { titleString = [self.dateFormatterForTheDayAfterTomorrow   stringFromDate:sectionDayDate]; // day after tomorrow
+    } else               { titleString = [self.dateFormatterForAnyDayInTheFuture     stringFromDate:sectionDayDate]; // any day thereafter in the future
+    }
     
     return titleString;
 }
@@ -437,6 +452,26 @@
     return NO;
 }
 
+
+// Wichtige Routine, die an die Daten anzupassen ist. Hier wird ein neues Datenelement (also eine Zeile) den "Core Data"-Daten hinzugefügt.
+// wird vom segue aufgerufen, der wiederum aufgeruffen wurde, wenn der Add-Button gedrückt wurde (siehe viewDidLoad).
+// Hier gibt es keine Tabellen- oder Zeilen-Information, es wird einfach eine neues Datenbank-Objekt erzeugt
+//- (void)insertNewObject:(id)sender // So ursprünglich vom Template. Richtig, wenn im gleichen View geblieben wird
+- (Event *)insertNewObject  // So für sofortigen Sprung über den Segue in den DetailViewController
+{
+    NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];  // Erzeugt ein Object context, das mit dem property managedObjectContext belegt wird
+    NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];     // Erzeugt ein EntityDescription
+    
+    // Create an undo manager for the current context (the object created later carries the context information as a property, and thus also the undo manager)
+    [context setUndoManager:[[NSUndoManager alloc] init]];
+    [context.undoManager beginUndoGrouping];
+    
+    // Create a new object in the database (will be really saved to the database, when the managedObjectContext is saved)
+    Event *newEvent = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:context];
+    return newEvent;
+}
+
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     NSLog(@"segue itentifier is %@", segue.identifier);
@@ -446,10 +481,11 @@
         [segue.destinationViewController setEvent:newEvent];            // Property der Klasse Event in DetailViewController setzen
         NSLog(@"newEvent %@", newEvent.description);
     }
-    else if ([[segue identifier] isEqualToString:@"showDetail2"]) {
+    else if ([[segue identifier] isEqualToString:@"showDetail"]) {
         
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];   // Index der selektierten Zeile der Tabelle
-                
+        
+        
         // Property des Ziel-Kontrollers des segue setzen. Die Controller scheinen schon irgendwie vom System instanziiert zu sein.
         Event *event = [[self fetchedResultsController] objectAtIndexPath:indexPath]; // Objekt zur Zeile, aber vom Klassentyp Event
         
@@ -457,6 +493,19 @@
         NSManagedObjectContext *context = [event managedObjectContext];  // Get the managedObjectContext for the object
         [context setUndoManager:[[NSUndoManager alloc] init]];           // Create a new undo manager
         [context.undoManager beginUndoGrouping];                         // start collection undo information (undo can be done to this point)
+
+
+//        // Test mit eigenem, lokal erzeugtem managed object context (siehe core data code snippets)
+//        NSEntityDescription *edc = [event entity];
+//        NSPersistentStoreCoordinator *psc = [context persistentStoreCoordinator];
+//        NSManagedObjectContext *newContext = [[NSManagedObjectContext alloc] init];
+//        [newContext setPersistentStoreCoordinator:psc];
+//        
+//        Event *theEvent = [[Event alloc] initWithEntity:edc insertIntoManagedObjectContext:newContext];
+//        
+//        NSLog(@"event %@",event.description);
+//        NSLog(@"theEvent %@", theEvent.description);
+//        [segue.destinationViewController setEvent:theEvent];         // Property der Klasse Event
         
         [segue.destinationViewController setEvent:event];         // Property der Klasse Event
     }
@@ -578,14 +627,35 @@
             
         case NSFetchedResultsChangeUpdate:                                      // Ändert eine Zeile
 
-            [self configureCell:[tableView cellForRowAtIndexPath:indexPath]
-                    atIndexPath:indexPath];
-
-            // Test: nur ausführen, wenn dieser ViewController auch gerade angezeigt wird
-//            if (self == self.navigationController.topViewController) {
+            
+            // configureCell:atIndexPath: became somewhat slow with new styling of cells (as of Dec 2013). Thus configureCell:atIndexPath: should only be called when necessary (up till to date it was called, whenever a single value of the event entity was changed in the detail view controller. To avoid this, the property cellAtIntexPathRecentlyChanged stores wether changes to event have been made in the detail view controller. This ist done right here. When changes in the detail view controller are finished and the app switches back to this master view controller, configureCell:atIndexPath: is finally called (which is handled in viewWillAppear)
+//            if (TABLE_VIEW_CELL_STYLE_IS_OLD) {
+//                [self configureCell2:[tableView cellForRowAtIndexPath:indexPath]
+//                         atIndexPath:indexPath];
+//            } else {
 //                [self configureCell:[tableView cellForRowAtIndexPath:indexPath]
-//                        atIndexPath:indexPath];
+//                         atIndexPath:indexPath];
+//                
 //            }
+            self.cellAtIndexPathRecentlyChanged = [[NSIndexPath alloc] init];
+            self.cellAtIndexPathRecentlyChanged = indexPath;
+
+            // Test: nur ausführen, wenn dieser ViewController auch gerade angezeigt wird, das klappt aber nicht
+//            if (self == self.navigationController.topViewController) {
+            if (TABLE_VIEW_CELL_STYLE==0) {
+                [self configureCell2:[tableView cellForRowAtIndexPath:indexPath]
+                        atIndexPath:indexPath];
+            } else if (TABLE_VIEW_CELL_STYLE == 1){
+                [self configureCell: (TVCell *)[tableView cellForRowAtIndexPath:indexPath]
+                        atIndexPath:indexPath];
+            } else {
+                [self configureCell3: (DiaryTableViewCell *)[tableView cellForRowAtIndexPath:indexPath]
+                        atIndexPath:indexPath];
+            }
+//            }
+            
+            
+            
             break;
             
         case NSFetchedResultsChangeMove:                                        // Verschiebt eine Zeile
@@ -600,12 +670,15 @@
 // Wird aufgerufen, wenn die Änderungen vorgenommen wurden sind
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    // TODO: Achtung (2013-11-14): Großes Experiment hier. Diese Methode wird jedes mal aufgerufen, wenn sich eine Änderung im Managed Object Context ergibt. Das passiert als auch jedes mal, wenn nur der "Cursor" im DetailViewController bewegt wird, oder dort ein Wert eingetragen wird, weil dies direkt in Core Data umgesetzt wird. Das führte zu erheblichen(!) Performanceproblemen im DetailViewController. Mit nachfolgendem if-statement konnte dies behoben werden. Und die Daten werden im TableView trotzdem richtig aktualisiert (selbst, wenn man das hier auskommentiert)
+    // TODO: Achtung (2013-11-14): Großes Experiment hier. Diese Methode wird jedes mal aufgerufen, wenn sich eine Änderung im Managed Object Context ergibt. Das passiert also auch jedes mal, wenn nur der "Cursor" im DetailViewController bewegt wird, oder dort ein Wert eingetragen wird, weil dies direkt in Core Data umgesetzt wird. Das führte zu erheblichen(!) Performanceproblemen im DetailViewController. Mit nachfolgendem if-statement konnte dies behoben werden. Und die Daten werden im TableView trotzdem richtig aktualisiert (selbst, wenn man das hier auskommentiert)
     // Vielleicht könnte das auch mit einem lokalen ManagedObjectContext für den DetailViewController erreicht werden, der dann nach dem save gemerged wird (siehe auch stackoverflow dazu: http://stackoverflow.com/questions/7842768/controllerdidchangecontent-called-every-time-i-create-a-managedobject-in-core-d )
     // Hiermit also das if, damit dies nur abgearbeitet wird, wenn dieser TableViewController auch gerade angezeigt wird.
-    if (self == self.navigationController.topViewController) {
+//    if (self == self.navigationController.topViewController) {
         [self.tableView endUpdates];
-   }
+//   }
+
+    
+    //    [self.tableView reloadData];
 }
 
 
@@ -733,11 +806,6 @@
 //    NSInteger hourOfDay = [components hour];
     
     CGFloat hourOfDay = (CGFloat)[components hour] + (CGFloat)[components minute] /60.0;
-    
-    NSLog(@"CHECK");
-    NSLog(@"self %@", self.description);
-    NSLog(@"self.top... %@", self.navigationController.topViewController);
-
 
 #define HUE_00 10.0
 #define HUE_12 40.0
@@ -759,7 +827,7 @@
         sat =    ( SAT_00    + (SAT_12    - SAT_00)    * (24.0 - hourOfDay) / 12.0 );
         bright = ( BRIGHT_00 + (BRIGHT_12 - BRIGHT_00) * (24.0 - hourOfDay) / 12.0 );
     }
-    NSLog(@" hour = %f, hue = %f, sat = %f, bright = %f", hourOfDay, hue, sat, bright);
+//    NSLog(@" hour = %f, hue = %f, sat = %f, bright = %f", hourOfDay, hue, sat, bright);
     return [UIColor colorWithHue:hue saturation:sat brightness:.90 alpha:1.0];
 }
 
@@ -826,6 +894,89 @@
     return _dateTimeFormatter;
 }
 
+# pragma mark -- date formatters for section headers
+
+-(NSDateFormatter *)dateFormatterForComparison {
+    if (!_dateFormatterForComparison) {
+        _dateFormatterForComparison = [[NSDateFormatter alloc] init];
+        _dateFormatterForComparison.dateFormat = @"yyyyMMdd";
+    }
+    return _dateFormatterForComparison;
+}
+
+-(NSDateFormatter *)dateFormatterForAnyDayInThePast {
+    if (!_dateFormatterForAnyDayInThePast) {
+        _dateFormatterForAnyDayInThePast = [[NSDateFormatter alloc] init];
+        _dateFormatterForAnyDayInThePast.dateFormat = @"EEEE, d. LLLL yyyy";
+    }
+    return _dateFormatterForAnyDayInThePast;
+}
+-(NSDateFormatter *)dateFormatterForTheDayBeforeYesterday {
+    if (!_dateFormatterForTheDayBeforeYesterday) {
+        _dateFormatterForTheDayBeforeYesterday = [[NSDateFormatter alloc] init];
+        _dateFormatterForTheDayBeforeYesterday.dateFormat = @"'Vorgestern', EEEE, d. LLLL yyyy";
+    }
+    return _dateFormatterForTheDayBeforeYesterday;
+}
+
+-(NSDateFormatter *)dateFormatterForYesterday{
+    if (!_dateFormatterForYesterday) {
+        _dateFormatterForYesterday = [[NSDateFormatter alloc] init];
+        _dateFormatterForYesterday.dateFormat = @"'Gestern', EEEE, d. LLLL yyyy";
+    }
+    return _dateFormatterForYesterday;
+}
+
+-(NSDateFormatter *)dateFormatterForToday {
+    if (!_dateFormatterForToday) {
+        _dateFormatterForToday = [[NSDateFormatter alloc] init];
+        _dateFormatterForToday.dateFormat = @"'Heute', EEEE, d. LLLL yyyy";
+    }
+    return _dateFormatterForToday;
+}
+
+-(NSDateFormatter *)dateFormatterForTomorrow {
+    if (!_dateFormatterForTomorrow) {
+        _dateFormatterForTomorrow = [[NSDateFormatter alloc] init];
+        _dateFormatterForTomorrow.dateFormat = @"'Morgen', EEEE, d. LLLL yyyy";
+    }
+    return _dateFormatterForTomorrow;
+}
+
+-(NSDateFormatter *)dateFormatterForTheDayAfterTomorrow {
+    if (!_dateFormatterForTheDayAfterTomorrow) {
+        _dateFormatterForTheDayAfterTomorrow = [[NSDateFormatter alloc] init];
+        _dateFormatterForTheDayAfterTomorrow.dateFormat = @"'Übermorgen', EEEE, d. LLLL yyyy";
+    }
+    return _dateFormatterForTheDayAfterTomorrow;
+}
+
+-(NSDateFormatter *)dateFormatterForAnyDayInTheFuture {
+    if (!_dateFormatterForAnyDayInTheFuture) {
+        _dateFormatterForAnyDayInTheFuture = [[NSDateFormatter alloc] init];
+        _dateFormatterForAnyDayInTheFuture.dateFormat = @"EEEE, d. LLLL yyyy";
+    }
+    return _dateFormatterForAnyDayInTheFuture;
+}
+
+//@property (strong, nonatomic) NSDateFormatter *dateFormatterForAnyPastDay;
+//@property (strong, nonatomic) NSDateFormatter *dateFormatterForTheDayBeforeYesterday;
+//@property (strong, nonatomic) NSDateFormatter *dateFormatterForYesterday;
+//@property (strong, nonatomic) NSDateFormatter *dateFormatterForToday;
+//@property (strong, nonatomic) NSDateFormatter *dateFormatterForTomorrow;
+//@property (strong, nonatomic) NSDateFormatter *dateFormatterForTheDayAfterTomorrow;
+//@property (strong, nonatomic) NSDateFormatter *dateFormatterForAnyDayInTheFuture;
+
+//if (days < -2)       { [dateFormatter setDateFormat:@"EEEE, d. LLLL yyyy"];                 // any day in the past (before the day before yesterday)
+//} else if (days <-1) { [dateFormatter setDateFormat:@"'Vorgestern', EEEE, d. LLLL yyyy"];   // day before yesterday
+//} else if (days < 0) { [dateFormatter setDateFormat:@"'Gestern', EEEE, d. LLLL yyyy"];      // yesterday
+//} else if (days < 1) { [dateFormatter setDateFormat:@"'Heute', EEEE, d. LLLL yyyy"];        // today
+//} else if (days < 2) { [dateFormatter setDateFormat:@"'Morgen', EEEE, d. LLLL yyyy"];       // tomorrow
+//} else if (days < 3) { [dateFormatter setDateFormat:@"'Übermorgen', EEEE, d. LLLL yyyy"];   // day after tomorrow
+//} else               { [dateFormatter setDateFormat:@"EEEE, d. LLLL yyyy"];                 // any day thereafter in the future
+
+
+
 # pragma mark -- Sachen zu Core Data aus AppDelegate
 
 
@@ -845,15 +996,20 @@
 }
 
 
-// Lazy getter for managedObjectContext, which is received from the UPAppDelegate
--(NSManagedObjectContext *)managedObjectContext {
-    if (!_managedObjectContext) {
-        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        _managedObjectContext = [[NSManagedObjectContext alloc] init];
-        _managedObjectContext = appDelegate.managedObjectContext;
-    }
-    return _managedObjectContext;
-}
+//// Lazy getter for managedObjectContext, which is received from the UPAppDelegate
+//-(NSManagedObjectContext *)managedObjectContext {
+//    if (!_managedObjectContext) {
+//        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+//        _managedObjectContext = [[NSManagedObjectContext alloc] init];
+//        _managedObjectContext = appDelegate.managedObjectContext;
+//    }
+//    return _managedObjectContext;
+//}
+
+
+
+
+
 
 #pragma mark - Core Data stack
 

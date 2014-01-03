@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		C62350761868840C00A5DB9A /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = C62350751868840C00A5DB9A /* Event.m */; };
+		C6235079186CAE6100A5DB9A /* DiaryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C6235078186CAE6100A5DB9A /* DiaryTableViewCell.m */; };
+		C623507C186CAFDC00A5DB9A /* DiaryTableViewView.m in Sources */ = {isa = PBXBuildFile; fileRef = C623507B186CAFDC00A5DB9A /* DiaryTableViewView.m */; };
 		C64713461868589C00C0419E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C64713451868589C00C0419E /* Foundation.framework */; };
 		C64713481868589C00C0419E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C64713471868589C00C0419E /* CoreGraphics.framework */; };
 		C647134A1868589C00C0419E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C64713491868589C00C0419E /* UIKit.framework */; };
@@ -49,6 +51,13 @@
 /* Begin PBXFileReference section */
 		C62350741868840C00A5DB9A /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Event.h; sourceTree = "<group>"; };
 		C62350751868840C00A5DB9A /* Event.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Event.m; sourceTree = "<group>"; };
+		C6235077186CAE6100A5DB9A /* DiaryTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiaryTableViewCell.h; sourceTree = "<group>"; };
+		C6235078186CAE6100A5DB9A /* DiaryTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiaryTableViewCell.m; sourceTree = "<group>"; };
+		C623507A186CAFDC00A5DB9A /* DiaryTableViewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiaryTableViewView.h; sourceTree = "<group>"; };
+		C623507B186CAFDC00A5DB9A /* DiaryTableViewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiaryTableViewView.m; sourceTree = "<group>"; };
+		C623507D186F751100A5DB9A /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main_iPad.strings; sourceTree = "<group>"; };
+		C623507E186F751100A5DB9A /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		C623507F186F751100A5DB9A /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C64713421868589C00C0419E /* BolusC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BolusC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C64713451868589C00C0419E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C64713471868589C00C0419E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -158,12 +167,16 @@
 				C64713A418685E6000C0419E /* BloodSugarGraphView.m */,
 				C64713A118685E6000C0419E /* BSGViewController.h */,
 				C64713A218685E6000C0419E /* BSGViewController.m */,
+				C623507A186CAFDC00A5DB9A /* DiaryTableViewView.h */,
+				C623507B186CAFDC00A5DB9A /* DiaryTableViewView.m */,
+				C6235077186CAE6100A5DB9A /* DiaryTableViewCell.h */,
+				C6235078186CAE6100A5DB9A /* DiaryTableViewCell.m */,
 				C647139518685E1800C0419E /* TimeAndDateViewController.h */,
 				C647139618685E1800C0419E /* TimeAndDateViewController.m */,
-				C647139B18685E3A00C0419E /* DetailViewController.h */,
-				C647139C18685E3A00C0419E /* DetailViewController.m */,
 				C64713A718685E7C00C0419E /* TVCell.h */,
 				C64713A818685E7C00C0419E /* TVCell.m */,
+				C647139B18685E3A00C0419E /* DetailViewController.h */,
+				C647139C18685E3A00C0419E /* DetailViewController.m */,
 				C647139718685E1800C0419E /* MasterViewController.h */,
 				C647139818685E1800C0419E /* MasterViewController.m */,
 				C64713681868589C00C0419E /* Images.xcassets */,
@@ -285,6 +298,7 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
 			);
 			mainGroup = C64713391868589C00C0419E;
 			productRefGroup = C64713431868589C00C0419E /* Products */;
@@ -325,6 +339,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C64713B518686AA200C0419E /* BolusC.xcdatamodeld in Sources */,
+				C623507C186CAFDC00A5DB9A /* DiaryTableViewView.m in Sources */,
 				C647139918685E1800C0419E /* TimeAndDateViewController.m in Sources */,
 				C64713A618685E6000C0419E /* BloodSugarGraphView.m in Sources */,
 				C62350761868840C00A5DB9A /* Event.m in Sources */,
@@ -337,6 +352,7 @@
 				C647139D18685E3A00C0419E /* DetailViewController.m in Sources */,
 				C64713A518685E6000C0419E /* BSGViewController.m in Sources */,
 				C64713541868589C00C0419E /* main.m in Sources */,
+				C6235079186CAE6100A5DB9A /* DiaryTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,6 +379,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				C64713511868589C00C0419E /* en */,
+				C623507E186F751100A5DB9A /* de */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -371,6 +388,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				C647135D1868589C00C0419E /* Base */,
+				C623507D186F751100A5DB9A /* de */,
 			);
 			name = Main_iPad.storyboard;
 			sourceTree = "<group>";
@@ -379,6 +397,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				C647137A1868589D00C0419E /* en */,
+				C623507F186F751100A5DB9A /* de */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

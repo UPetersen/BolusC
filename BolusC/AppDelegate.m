@@ -32,6 +32,45 @@
 //        MasterViewController *controller = (MasterViewController *)navigationController.topViewController;
 //        controller.managedObjectContext = self.managedObjectContext;
 //    }
+    
+    // set managedObjectContext in viewControllers that need it
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        
+        NSLog(@" Achtung Uwi: setting of mangedObjectConext in viewControllers for iPad-version of this app is not yet implemented in AppDelegate.m. Das muss noch gemacht werden.");
+        
+    } else {
+        
+        // rootView is a tabBarController and has two child controllers: a navigationBarController and a BSGViewController
+        UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
+        for (UIViewController *childViewController in tabBarController.viewControllers) {
+            
+            NSLog(@"AppDelegate.m, childViewController is: %@", childViewController.description);
+            
+            // Handle case 1: navigationController: step through its view controllers
+            if ([childViewController isKindOfClass:[UINavigationController class]]) {
+                
+                // Search through its viewControllers (that is just one viewController, the MasterViewController) and set its mangedObjectContext property
+                UINavigationController *navigationController = (UINavigationController *) childViewController ;
+                for (UIViewController *viewController in navigationController.viewControllers ) {
+                    
+                    NSLog(@"  AppDelegate.m, viewController of the navigationController is: %@", viewController);
+                    
+                    if ([viewController respondsToSelector:@selector(setManagedObjectContext:)]) {
+                        [viewController performSelector:@selector(setManagedObjectContext:) withObject:self.managedObjectContext];
+                        NSLog(@"  AppDelegate.m, Passed managed object context to %@", [viewController description]);
+                    }
+                }
+            } else {
+                // Handle case 2: BSGViewController, which can be accessed directly
+                if ([childViewController respondsToSelector:@selector(setManagedObjectContext:)]) {
+                    [childViewController performSelector:@selector(setManagedObjectContext:) withObject:self.managedObjectContext];
+                    NSLog(@"AppDelegate.m, Passed managed object context to %@", [childViewController description]);
+                }
+            }
+        }
+    }
+
     return YES;
 }
 							

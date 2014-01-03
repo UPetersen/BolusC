@@ -44,6 +44,7 @@
 }
 
 -(void)viewWillAppear:(BOOL)animated {
+    self.bloodSugarGraphView.managedObjectContext = self.managedObjectContext;
     [self saveContext:self.managedObjectContext];
     [self.bloodSugarGraphView setNeedsDisplay];
 }
@@ -100,15 +101,18 @@
 }
 
 
-// Lazy getter for managedObjectContext, which is received from the UPAppDelegate
--(NSManagedObjectContext *)managedObjectContext {
-    if (!_managedObjectContext) {
-        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        _managedObjectContext = [[NSManagedObjectContext alloc] init];
-        _managedObjectContext = appDelegate.managedObjectContext;
-    }
-    return _managedObjectContext;
-}
+//// Lazy getter for managedObjectContext, which is received from the UPAppDelegate
+//-(NSManagedObjectContext *)managedObjectContext {
+//    if (!_managedObjectContext) {
+//        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+//        _managedObjectContext = [[NSManagedObjectContext alloc] init];
+//        _managedObjectContext = appDelegate.managedObjectContext;
+//    }
+//    return _managedObjectContext;
+//}
+//
+
+
 //
 //
 //

@@ -648,15 +648,15 @@
 //}
 //
 
-// Lazy getter for managedObjectContext, which is received from the UPAppDelegate
--(NSManagedObjectContext *)managedObjectContext {
-    if (!_managedObjectContext) {
-        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        _managedObjectContext = [[NSManagedObjectContext alloc] init];
-        _managedObjectContext = appDelegate.managedObjectContext;
-    }
-    return _managedObjectContext;
-}
+//// Lazy getter for managedObjectContext, which is received from the UPAppDelegate
+//-(NSManagedObjectContext *)managedObjectContext {
+//    if (!_managedObjectContext) {
+//        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+//        _managedObjectContext = [[NSManagedObjectContext alloc] init];
+//        _managedObjectContext = appDelegate.managedObjectContext;
+//    }
+//    return _managedObjectContext;
+//}
 
 // TODO: fetched results controller muss raus hier und in den view controller oder sonst wo hin
 

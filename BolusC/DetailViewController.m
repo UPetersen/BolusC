@@ -21,11 +21,15 @@
 @interface DetailViewController ()
 
 // Number formatters for label for shortBolus, e.g. "0,1 + 0,9 = 1 IE"
-@property (strong,nonatomic) NSNumberFormatter *numberFormatterShortBolus;
-@property (strong,nonatomic) NSNumberFormatter *numberFormatter;
-@property (strong,nonatomic) NSNumberFormatter *numberFormatter1Digits;
-@property (strong,nonatomic) NSNumberFormatter *numberFormatter2Digits;
-@property (strong,nonatomic) NSNumberFormatter *numberFormatterBasal;
+@property (strong, nonatomic) NSNumberFormatter *numberFormatterShortBolus;
+@property (strong, nonatomic) NSNumberFormatter *numberFormatter;
+@property (strong, nonatomic) NSNumberFormatter *numberFormatter1Digits;
+@property (strong, nonatomic) NSNumberFormatter *numberFormatter2Digits;
+@property (strong, nonatomic) NSNumberFormatter *numberFormatterBasal;
+
+@property (strong, nonatomic) NSDateFormatter *dateFormatterForTime;
+@property (strong, nonatomic) NSDateFormatter *dateFormatterForDate;
+@property (strong, nonatomic) NSDateFormatter *dateFormatter;
 
 // BSKeyboardControls by Simon B. Stoevring, MIT-Licence for input accessory view above keyboard
 @property (nonatomic, strong) BSKeyboardControls *keyboardControls;
@@ -80,6 +84,22 @@
     // Button to dismiss the keyboard, it is displayed while the keyboard is displayed
     dismissKeyboardButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveButtonPressed:)];
 }
+
+-(void)viewWillAppear:(BOOL)animated {
+    
+    // A C H T U N G  Wird gebraucht für automatisches Scrollen wenn das Keyboard erscheint!!
+    [super viewWillAppear:animated];
+    
+    [self configureView];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+
 
 # pragma mark - handle sliders and textfields for correctionBolus, chuBolus, fpuBolus
 
@@ -320,12 +340,8 @@
         NSLog(@"self.labelDate.description %@", self.labelDate.description);
         NSLog(@"self.labelTime.description %@", self.labelTime.description);
 #endif
-        NSDateFormatter *dateTimeFormatter = [[NSDateFormatter alloc]init];  // Initialize Date Formatter
-        [dateTimeFormatter setDateFormat:@"HH:mm"];                          // Specify the date format
-        self.labelTime.text = [dateTimeFormatter stringFromDate:self.event.timeStamp];
-        
-        [dateTimeFormatter setDateFormat:@"dd. MMMM yyyy"];                   // Specify the date format
-        self.labelDate.text = [dateTimeFormatter stringFromDate:self.event.timeStamp];
+        self.labelTime.text = [self.dateFormatterForTime stringFromDate:self.event.timeStamp];
+        self.labelDate.text = [self.dateFormatterForDate stringFromDate:self.event.timeStamp];
         
 #ifdef VERBOSE
         NSLog(@"self.labelDate.text %@", self.labelDate.text);
@@ -422,20 +438,6 @@
     self.navigationItem.rightBarButtonItem = saveButton;    // display regular save button
 }
 
-
--(void)viewWillAppear:(BOOL)animated {
-    
-    // A C H T U N G  Wird gebraucht für automatisches Scrollen wenn das Keyboard erscheint!!
-    [super viewWillAppear:animated];
-    
-    [self configureView];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
 #pragma mark - Table view data source
 
@@ -560,8 +562,10 @@
     }
 }
 -(void)cancelButtonPressed:(id)sender {
+#ifdef VERBOSE
     NSLog(@"in cancelButtonPressed");
-
+#endif
+    
     NSManagedObjectContext *context =[self.event managedObjectContext]; // Get the managedObjectContext of the object
     [context.undoManager endUndoGrouping];                          // end collection undo information
     [context.undoManager undo];                                     // undo changes that have been made so far
@@ -578,7 +582,7 @@
 #ifdef VERBOSE
     NSLog(@"in saveButtonPressed-Method");
 #endif
-
+    
     // TODO: Nochmal überlegen, ob das mit den Berechnungsketten der richtige Weg ist, da es dann keine Setter-Möglichkeiten gibt, was hier manchmal besser wäre
     
     self.event.basalDosis       = [self.numberFormatterBasal numberFromString:self.textFieldBasal.text];
@@ -676,6 +680,30 @@
     }
     return _numberFormatterBasal;
 }
+
+
+-(NSDateFormatter *) dateFormatterForDate {
+    if (!_dateFormatterForDate) {
+        _dateFormatterForDate = [[NSDateFormatter alloc] init];  // Initialize Date Formatter
+        _dateFormatterForDate.dateFormat = @"HH:mm";                          // Specify the date format
+    }
+    return _dateFormatterForDate;
+}
+-(NSDateFormatter *) dateFormatterForTime {
+    if (!_dateFormatterForTime) {
+        _dateFormatterForTime = [[NSDateFormatter alloc] init];  // Initialize Date Formatter
+        _dateFormatterForTime.dateFormat = @"dd. MMMM yyyy";                   // Specify the date format
+    }
+    return _dateFormatterForTime;
+}
+//-(NSDateFormatter *)dateFormatter {
+//    if (!_dateFormatter) {
+//        _dateFormatter = [[NSDateFormatter alloc] init];
+//        _dateFormatter.dateFormat = @"HH:MM Uhr, dd. MMM yyyy";
+//    }
+//    return _dateFormatter;
+//}
+
 
 //// Method that is called, when key "enter"/"next"/"return"/"done" is pressed in the textField that is currently edited
 //// Method is used here to
