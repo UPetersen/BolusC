@@ -36,6 +36,8 @@
 		C64713A618685E6000C0419E /* BloodSugarGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = C64713A418685E6000C0419E /* BloodSugarGraphView.m */; };
 		C64713A918685E7C00C0419E /* TVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C64713A818685E7C00C0419E /* TVCell.m */; };
 		C64713B518686AA200C0419E /* BolusC.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C64713B218686AA200C0419E /* BolusC.xcdatamodeld */; };
+		C6AE929D187AE07800370E65 /* Events.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE929C187AE07800370E65 /* Events.m */; };
+		C6AE92A0187B320000370E65 /* NSCalendar+mySpecialCalculations.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE929F187B320000370E65 /* NSCalendar+mySpecialCalculations.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +99,10 @@
 		C64713A818685E7C00C0419E /* TVCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCell.m; sourceTree = "<group>"; };
 		C64713B318686AA200C0419E /* BolusC 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "BolusC 2.xcdatamodel"; sourceTree = "<group>"; };
 		C64713B418686AA200C0419E /* BolusC.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BolusC.xcdatamodel; sourceTree = "<group>"; };
+		C6AE929B187AE07800370E65 /* Events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Events.h; sourceTree = "<group>"; };
+		C6AE929C187AE07800370E65 /* Events.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Events.m; sourceTree = "<group>"; };
+		C6AE929E187B320000370E65 /* NSCalendar+mySpecialCalculations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSCalendar+mySpecialCalculations.h"; sourceTree = "<group>"; };
+		C6AE929F187B320000370E65 /* NSCalendar+mySpecialCalculations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSCalendar+mySpecialCalculations.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +134,8 @@
 		C64713391868589C00C0419E = {
 			isa = PBXGroup;
 			children = (
+				C6AE929B187AE07800370E65 /* Events.h */,
+				C6AE929C187AE07800370E65 /* Events.m */,
 				C647134D1868589C00C0419E /* BolusC */,
 				C64713761868589D00C0419E /* BolusCTests */,
 				C64713441868589C00C0419E /* Frameworks */,
@@ -219,11 +227,13 @@
 		C647138B18685C2400C0419E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				C647138C18685C6B00C0419E /* Event+Extensions.h */,
+				C647138D18685C6B00C0419E /* Event+Extensions.m */,
+				C6AE929E187B320000370E65 /* NSCalendar+mySpecialCalculations.h */,
+				C6AE929F187B320000370E65 /* NSCalendar+mySpecialCalculations.m */,
 				C62350741868840C00A5DB9A /* Event.h */,
 				C62350751868840C00A5DB9A /* Event.m */,
 				C64713B218686AA200C0419E /* BolusC.xcdatamodeld */,
-				C647138C18685C6B00C0419E /* Event+Extensions.h */,
-				C647138D18685C6B00C0419E /* Event+Extensions.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -346,10 +356,12 @@
 				C647139218685CCB00C0419E /* BSKeyboardControls.m in Sources */,
 				C64713A018685E4D00C0419E /* NSNumber+UPNumberFormats.m in Sources */,
 				C647139A18685E1800C0419E /* MasterViewController.m in Sources */,
+				C6AE929D187AE07800370E65 /* Events.m in Sources */,
 				C64713A918685E7C00C0419E /* TVCell.m in Sources */,
 				C647138E18685C6B00C0419E /* Event+Extensions.m in Sources */,
 				C64713581868589C00C0419E /* AppDelegate.m in Sources */,
 				C647139D18685E3A00C0419E /* DetailViewController.m in Sources */,
+				C6AE92A0187B320000370E65 /* NSCalendar+mySpecialCalculations.m in Sources */,
 				C64713A518685E6000C0419E /* BSGViewController.m in Sources */,
 				C64713541868589C00C0419E /* main.m in Sources */,
 				C6235079186CAE6100A5DB9A /* DiaryTableViewCell.m in Sources */,

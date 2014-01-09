@@ -11,8 +11,6 @@
 //  5. generalize this view and clearly seperate data (the model) from the view stuff
 //  6. Add x- and y-labels (with units) and a title
 //  7. Maybe draw x- and y-Ticks over the lines of the grid (therefore they would need a colored background which would have to match the varying colored background of the canvas -- sounds maybe too difficult to handle and, thus, would mean to better draw the ticks outside of the data rectangle which on should better do anyway, if one had more space...)
-//  8. Rename this view to e.g. DayView and get rid of the old stuff from PlayingCardView not needed here.
-//  9.Die Sachen zu managedObjectContext muessen hier raus.
 //  11. Handle rotation of the device and ensure that paning and pinching ist possible all over the view area in horizontal orientation
 //  12. Set the views background color, rather than filling a rect for the very same purpose
 //  13. Paning doesn't work for gridlines with a value of zero. Use two array to overcome this:
@@ -22,6 +20,8 @@
 //  Solved already:
 //  3. Apply horizontal and vertical scaling seperately (see link stored in Safari) and, when this is finally implemented,
 //  4. ensure that paning does no more implizit scaling (as it now does, when a border is reached). To do this, for instance, don't allow max_x to grow, when min_x has reached its limit (DEFAULT_... or MIN_MIN... in the case of the y-axis)
+//  8. Rename this view to e.g. DayView and get rid of the old stuff from PlayingCardView not needed here.
+//  9.Die Sachen zu managedObjectContext muessen hier raus.
 //  10. Add MIN_MIN_x and MAX_MAX_X to allow panning over the 0- and 24-hour border and have a look at the data at night (use negative values in calculations and text labels according to the real hour of day? --> would mean to work with an array that stores two values, which should work)
 
 
@@ -33,7 +33,7 @@
 #import "AppDelegate.h"
 
 @interface BloodSugarGraphView()
-//@property (nonatomic) CGFloat faceCardScaleFactor;
+
 @property (nonatomic) CGFloat x;
 @property (nonatomic) CGFloat y;
 @property (nonatomic) CGPoint point;
@@ -46,14 +46,10 @@
 @property (nonatomic) CGFloat max_x;
 @property (nonatomic) CGFloat min_y;
 @property (nonatomic) CGFloat max_y;
+
 @end
 
 @implementation BloodSugarGraphView
-
-// Core Data stuff
-@synthesize managedObjectContext = _managedObjectContext;
-//@synthesize managedObjectModel = _managedObjectModel;
-//@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
 // stuff for conversion between view coordinates and the coordinates of the data
 @synthesize scaleFactorX = _scaleFactorX;  // because we provide setter and getter
@@ -205,15 +201,6 @@
 //    _points = points;
 //}
 
--(CGFloat) hourOfDay: (NSDate *) timestamp
-{
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    
-    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:timestamp];
-    NSInteger hour = [components hour];
-    NSInteger minute = [components minute];
-    return (CGFloat) (hour + ((CGFloat) minute )/ 60.0);
-}
 
 -(void)setup
 {
@@ -342,7 +329,7 @@
         [gridLines addLineToPoint:CGPointMake(self.bounds.size.width,yVal)]; // end point of grid line
     }
     // vertical lines (x-lines)
-    NSArray *xGridValues = @[@(-2016),@(-1344),@(-1176),@(-1008),@(-840),@(-672),@(-504),@(-336),@(-168),@(-144),@(-120),@(-96),@(-72),@(-48),@(-24),@(-18),@(-12),@(-6),@(-3),@(0.001),@3,@6,@9,@12,@15,@18,@21,@24,@27];
+    NSArray *xGridValues = @[@(-2016),@(-1344),@(-1176),@(-1008),@(-840),@(-672),@(-504),@(-336),@(-168),@(-144),@(-120),@(-96),@(-72),@(-48),@(-24),@(0.001),@3,@6,@9,@12,@15,@18,@21,@24,@27];
     for (NSNumber *xValue in xGridValues){
 //        CGFloat xVal = (-self.min_x + [xValue floatValue] ) * self.scaleFactorX;
         CGFloat xVal = [self convertToViewCoordinatesX:[xValue floatValue]];
@@ -382,15 +369,17 @@
     
     int i = 0;
     
-    if (self.fetchedResultsController.fetchedObjects) {
+    if (self.Events) {
+
         
-        Event *newestEvent = [self.fetchedResultsController.fetchedObjects objectAtIndex:0];
+        Event *newestEvent = [self.Events objectAtIndex:0];
+        
         self.point = [self convertToPointInViewCoordinatesX:[[newestEvent hourOfDay] floatValue]
                                                           y:[newestEvent.bloodSugar floatValue]];
         [path moveToPoint:self.point];
         
         // Loop over fetched data is going from newest to oldest values (otherwhise use reverseObjectEnumerator)
-        for (Event *event in self.fetchedResultsController.fetchedObjects) {
+        for (Event *event in self.Events) {
             if (event.bloodSugar) {
                 
                 NSTimeInterval timeDiffInHours = [newestEvent.timeStamp timeIntervalSinceDate:event.timeStamp]/3600.0;
@@ -432,11 +421,9 @@
     
     //
     // Loop over fetched data is going from newest to oldest values (otherwhise use reverseObjectEnumerator)
-    for (Event *event in self.fetchedResultsController.fetchedObjects) {
+    for (Event *event in self.Events) {
         if (event.bloodSugar) {
             
-            //            self.point = CGPointMake((-self.min_x + [self hourOfDay:event.timeStamp]) * self.scaleFactorX,
-            //                                     (self.max_y - (CGFloat)[event.bloodSugar floatValue])* self.scaleFactorY) ; // works unexpectedly
             self.point = [self convertToPointInViewCoordinatesX:[[event hourOfDay] floatValue]
                                                               y:[event.bloodSugar floatValue]];
             
@@ -518,409 +505,5 @@
 //    return self;
 //}
 
-
-
-
-
-# pragma mark - Sachen zu Core Data aus AppDelegate
-
-//
-//// Speicher die Daten in "Core Data", wenn Änderungen an den Daten (im managedObjectContext) vorgenommen wurden
-//- (void)saveContext
-//{
-//    NSError *error = nil;
-//    NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
-//    if (managedObjectContext != nil) {
-//        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
-//            // Replace this implementation with code to handle the error appropriately.
-//            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-//            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-//            abort();
-//        }
-//    }
-//}
-//
-//#pragma mark - Core Data stack
-//
-//// Wohl Standard, schätze, dass hier nichts gemacht werden muss
-//
-//// Returns the managed object context for the application.
-//// If the context doesn't already exist, it is created and bound to the persistent store coordinator for the application.
-//- (NSManagedObjectContext *)managedObjectContext
-//{
-//    if (_managedObjectContext != nil) {
-//        return _managedObjectContext;
-//    }
-//    
-//    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
-//    if (coordinator != nil) {
-//        _managedObjectContext = [[NSManagedObjectContext alloc] init];
-//        [_managedObjectContext setPersistentStoreCoordinator:coordinator];
-//    }
-//    return _managedObjectContext;
-//}
-//
-//// Returns the managed object model for the application.
-//// If the model doesn't already exist, it is created from the application's model.
-//- (NSManagedObjectModel *)managedObjectModel
-//{
-//    if (_managedObjectModel != nil) {
-//        return _managedObjectModel;
-//    }
-//    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"BolusCalc" withExtension:@"momd"];
-//    _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-//    return _managedObjectModel;
-//}
-//
-//// Returns the persistent store coordinator for the application.
-//// If the coordinator doesn't already exist, it is created and the application's store added to it.
-//- (NSPersistentStoreCoordinator *)persistentStoreCoordinator
-//{
-//    if (_persistentStoreCoordinator != nil) {
-//        return _persistentStoreCoordinator;
-//    }
-//    
-//    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"BolusCalc.sqlite"];
-//    
-//    // Delete the store
-//    //    [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
-//    //    NSLog(@"Hopefully deleted the store");
-//    
-//    
-//    NSError *error = nil;
-//    _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-//    
-//    // Code for lightweight migration from raywenderlich.com
-//    NSDictionary *options = @{
-//                              NSMigratePersistentStoresAutomaticallyOption : @YES,
-//                              NSInferMappingModelAutomaticallyOption : @YES
-//                              };
-//    
-//    //if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]
-//    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:&error]) {
-//        /*
-//         Replace this implementation with code to handle the error appropriately.
-//         
-//         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-//         
-//         Typical reasons for an error here include:
-//         * The persistent store is not accessible;
-//         * The schema for the persistent store is incompatible with current managed object model.
-//         Check the error message to determine what the actual problem was.
-//         
-//         
-//         If the persistent store is not accessible, there is typically something wrong with the file path. Often, a file URL is pointing into the application's resources directory instead of a writeable directory.
-//         */
-//        //If you encounter schema incompatibility errors during development, you can reduce their frequency by:
-//        //* Simply deleting the existing store:
-//        //        [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
-//        //        NSLog(@"Hopefully deleted the store");
-//        
-//        //* Performing automatic lightweight migration by passing the following dictionary as the options parameter:
-//        //@{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES}
-//        
-//        //Lightweight migration will only work for a limited set of schema changes; consult "Core Data Model Versioning and Data Migration Programming Guide" for details.
-//        
-//        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-//        abort();
-//    }
-//    
-//    return _persistentStoreCoordinator;
-//}
-
-#pragma mark - Application's Documents directory
-
-//// Returns the URL to the application's Documents directory.
-//- (NSURL *)applicationDocumentsDirectory
-//{
-//    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-//}
-
-//-(void) saveContext:(NSManagedObjectContext *)context {
-//    // Save the context.
-//    NSError *error = nil;
-//    if (![context save:&error]) {
-//        // Replace this implementation with code to handle the error appropriately.
-//        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-//        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-//        abort();
-//    }
-//}
-//
-
-//// Lazy getter for managedObjectContext, which is received from the UPAppDelegate
-//-(NSManagedObjectContext *)managedObjectContext {
-//    if (!_managedObjectContext) {
-//        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-//        _managedObjectContext = [[NSManagedObjectContext alloc] init];
-//        _managedObjectContext = appDelegate.managedObjectContext;
-//    }
-//    return _managedObjectContext;
-//}
-
-// TODO: fetched results controller muss raus hier und in den view controller oder sonst wo hin
-
-#pragma mark - Fetched results controller
-
-// Controller für den fetch, d.h. die Suchanfrage
-// Nachfolgende Operationen erstellen eine Abfrage auf die Daten, samt zugehöriger Sortierung und Verweis auf diesen Controller, der aufgerufen wird, wenn sich die Daten ändern. Dies muss genau einmal gemacht werden und wird dann wohl immer aufgerufen, wenn Daten hinzugefügt, geändert oder gelöscht werden.
-// Dickes Buch S. 487: ... Core Data stellt Ihnen die Klasse NSFechtedResultsController zur Verfügung, die Ihnen diese Verbindung zwischen Suchanfragen und Tableviews vereinfacht. [Hilft also, wenn ich das richtig verstanden habe, die Tabelle gleich mit zu aktualisieren, wenn die Daten sich geändert haben] Außerdem unterstützt sie auch die Unterteilung der Daten in Abschnitte [also sections] anhand eines Attributs
-- (NSFetchedResultsController *)fetchedResultsController
-{
-    if (_fetchedResultsController != nil) {
-        return _fetchedResultsController;    // Wenn dies schon mal durchlaufen wurde, ist nichts mehr zu tun.
-    }
-    
-    // Request ist die eigentliche Abfrage
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    // Edit the entity name as appropriate. (Entity ist in etwas die Tabelle der Datenbank, Tabelle wäre hier die Tabelle Event)
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:self.managedObjectContext];
-    [fetchRequest setEntity:entity]; // Zurordnung der Abfrage zu Tabelle (oder umgekehrt)
-    
-    // Set the batch size to a suitable number.
-    [fetchRequest setFetchBatchSize:20];  // Holt immer nur eine bestimmte Datenmenge (Menge an Zeilen)
-    
-    // Edit the sort key as appropriate. // Sortiert die spätere Datenabfrage nach der "Spalte" timeStamp
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timeStamp" ascending:NO];
-    NSArray *sortDescriptors = @[sortDescriptor];
-    
-    [fetchRequest setSortDescriptors:sortDescriptors]; //Zuordnung des Sortierkriteriums zur Abfrage
-    
-    // Edit the section name key path and cache name if appropriate.
-    // nil for section name key path means "no sections".
-    
-    // A C H T U N G: Im Cache werden die transient Properties persistent gespeichert. Wenn der Cache gelöscht wird, muss alles neue erstellt werden. Das ist bei Änderungen der Sections erforderlich
-    [NSFetchedResultsController deleteCacheWithName:@"Master"];
-    
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc]
-                                                             initWithFetchRequest:fetchRequest          // die Abfrage
-                                                             managedObjectContext:self.managedObjectContext  // der Object Context (sozusagen das Memory, in dem die Daten zwischengespeichert werden, bis zum späteren save
-                                                             sectionNameKeyPath:@"dayString"                // Irgendwas mit dem Namen der Section
-                                                             cacheName:@"Master"];                      // Lokales Datenfile "Master"
-    
-    // Zurodnung des Abfrage-Controllers zu diesem MasterviewController selbst. Damit wird selbiger (also die Instanz) aufgerufen, wenn sich Abfrageergebnisse ändern
-    aFetchedResultsController.delegate = self;
-    self.fetchedResultsController = aFetchedResultsController;
-    
-	NSError *error = nil;
-	if (![self.fetchedResultsController performFetch:&error]) {
-        // Replace this implementation with code to handle the error appropriately.
-        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-	    NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-	    abort();
-	}
-    
-#ifdef VERBOSE
-//    // List all the Events that where fetched from the core data base
-//    NSArray *theArray = [NSArray new];
-//    int i = 0;
-//    theArray = [_fetchedResultsController fetchedObjects];
-//    
-//    for (id object in theArray) {
-//        NSLog(@"object #%d, %@", i, object);
-//        i++;
-//    }
-#endif
-    
-    return _fetchedResultsController;
-}
-
-//
-//#pragma mark stuff from superCard
-//
-//-(CGFloat)faceCardScaleFactor
-//{
-//    // Lazy getter
-//    if (!_faceCardScaleFactor) _faceCardScaleFactor = DEFAULT_FACE_CARD_SACLE_FACTOR;
-//    return _faceCardScaleFactor;
-//}
-//-(void) setFaceCardScaleFactor:(CGFloat)faceCardScaleFactor
-//{
-//    _faceCardScaleFactor = faceCardScaleFactor;
-//    [self setNeedsDisplay];
-//}
-//
-//
-//-(void)drawCorners  // Das "K♥" etc. in die Ecken zeichnen
-//{
-//    // Mit Attributed String erzeugen, (center alignment und Font dazu)
-//    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-//    paragraphStyle.alignment = NSTextAlignmentCenter;
-//    
-//    UIFont *cornerFont = [UIFont systemFontOfSize:self.bounds.size.width * 0.20];
-//    
-//    NSAttributedString *cornerText = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@",[self rankAsString],self.suit] attributes:@{NSParagraphStyleAttributeName : paragraphStyle, NSFontAttributeName : cornerFont }];
-//    
-//    // Koordinaten für den Text in der View festlegen
-//    CGRect textBounds;
-//    textBounds.origin = CGPointMake(CORNER_TEXT_ORIGIN_X, CORNER_TEXT_ORIGIN_Y);
-//    
-//    // Größe ist die des Textes selbst.
-//    textBounds.size = [cornerText size];
-//    
-//    [cornerText drawInRect:textBounds];  // Draw it, within the bounds of the text
-//    
-//    // Jetzt den Text in das untere rechte Eck zeichnen. Dazu Rotation etc, und dafür den Context auf den Stack pushen, bearbeiten und wieder runter nehmen, damit die Verschiebung und Rotation nicht auf alle weiteren zu zeichnenden Element angewandt werden
-//    [self pushContextAndRotateUpsideDown]; // Hier ist Verschiebung und Rotation mit drin
-//    [cornerText drawInRect:textBounds];    // Den bekannten Text dort zeichnen
-//    [self popContext]; // Jetzt wieder von Stack nehmen, da abgeschlossen und man hat den alten context für spätere Weiterbearbeitung
-//    
-//    
-//}
-//-(void) pushContextAndRotateUpsideDown
-//{
-//    CGContextRef context = UIGraphicsGetCurrentContext(); // context holten
-//    CGContextSaveGState(context); // Context wird auf den Stack gepusht
-//    // Jetzt kann damit alles beliebige gemacht werden, ohne den bisherigen Context zu verändern
-//    
-//    // Verschiebung in das rechte untere Eck
-//    CGContextTranslateCTM( context, self.bounds.size.width, self.bounds.size.height);
-//    
-//    // Drehung in radian
-//    CGContextRotateCTM(context, M_PI);
-//    
-//}
-//-(void)popContext
-//{
-//    CGContextRestoreGState(UIGraphicsGetCurrentContext());
-//}
-//
-//
-//-(NSString *) rankAsString
-//{
-//    return @[@"?",@"A",@"2",@"3",@"4",@"5",@"6",@"7",@"8",@"9",@"10",@"J",@"Q",@"K"][self.rank];
-//}
-//
-//
-//// Setter machen, damit ein redraw erzwungen wird, wenn sich die Karte ändert, wird der Einfachheit halber auch gemacht, wenn sich nur ein Property ändert.
-//-(void)setSuit:(NSString *)suit
-//{
-//    _suit = suit;
-//    [self setNeedsDisplay];
-//}
-//
-//-(void)setRank:(NSUInteger)rank
-//{
-//    _rank = rank;
-//    [self setNeedsDisplay];
-//}
-//
-//-(void)setFaceUp:(BOOL)faceUp
-//{
-//    _faceUp = faceUp;
-//    [self setNeedsDisplay];
-//}
-//
-//
-//
-//#pragma mark - Draw Pips
-//
-//#define PIP_HOFFSET_PERCENTAGE 0.165
-//#define PIP_VOFFSET1_PERCENTAGE 0.090
-//#define PIP_VOFFSET2_PERCENTAGE 0.175
-//#define PIP_VOFFSET3_PERCENTAGE 0.270
-////#define PIP_FONT_SCALE_FACTOR 0.20
-//#define PIP_FONT_SCALE_FACTOR 0.15
-//
-//- (void)drawPips
-//{
-//    if ((self.rank == 1) || (self.rank == 5) || (self.rank == 9) || (self.rank == 3)) {
-//        [self drawPipsWithHorizontalOffset:0
-//                            verticalOffset:0
-//                        mirroredVertically:NO];
-//    }
-//    if ((self.rank == 6) || (self.rank == 7) || (self.rank == 8)) {
-//        [self drawPipsWithHorizontalOffset:PIP_HOFFSET_PERCENTAGE
-//                            verticalOffset:0
-//                        mirroredVertically:NO];
-//    }
-//    if ((self.rank == 2) || (self.rank == 3) || (self.rank == 7) || (self.rank == 8) || (self.rank == 10)) {
-//        [self drawPipsWithHorizontalOffset:0
-//                            verticalOffset:PIP_VOFFSET2_PERCENTAGE
-//                        mirroredVertically:(self.rank != 7)];
-//    }
-//    if ((self.rank == 4) || (self.rank == 5) || (self.rank == 6) || (self.rank == 7) || (self.rank == 8) || (self.rank == 9) || (self.rank == 10)) {
-//        [self drawPipsWithHorizontalOffset:PIP_HOFFSET_PERCENTAGE
-//                            verticalOffset:PIP_VOFFSET3_PERCENTAGE
-//                        mirroredVertically:YES];
-//    }
-//    if ((self.rank == 9) || (self.rank == 10)) {
-//        [self drawPipsWithHorizontalOffset:PIP_HOFFSET_PERCENTAGE
-//                            verticalOffset:PIP_VOFFSET1_PERCENTAGE
-//                        mirroredVertically:YES];
-//    }
-//}
-//
-//- (void)drawPipsWithHorizontalOffset:(CGFloat)hoffset
-//                      verticalOffset:(CGFloat)voffset
-//                          upsideDown:(BOOL)upsideDown
-//{
-//    if (upsideDown) [self pushContextAndRotateUpsideDown];
-//    CGPoint middle = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
-//    UIFont *pipFont = [UIFont systemFontOfSize:self.bounds.size.width * PIP_FONT_SCALE_FACTOR];
-//    NSAttributedString *attributedSuit = [[NSAttributedString alloc] initWithString:self.suit attributes:@{ NSFontAttributeName : pipFont }];
-//    CGSize pipSize = [attributedSuit size];
-//    CGPoint pipOrigin = CGPointMake(
-//                                    middle.x-pipSize.width/2.0-hoffset*self.bounds.size.width,
-//                                    middle.y-pipSize.height/2.0-voffset*self.bounds.size.height
-//                                    );
-//    [attributedSuit drawAtPoint:pipOrigin];
-//    if (hoffset) {
-//        pipOrigin.x += hoffset*2.0*self.bounds.size.width;
-//        [attributedSuit drawAtPoint:pipOrigin];
-//    }
-//    if (upsideDown) [self popContext];
-//}
-//
-//- (void)drawPipsWithHorizontalOffset:(CGFloat)hoffset
-//                      verticalOffset:(CGFloat)voffset
-//                  mirroredVertically:(BOOL)mirroredVertically
-//{
-//    [self drawPipsWithHorizontalOffset:hoffset
-//                        verticalOffset:voffset
-//                            upsideDown:NO];
-//    if (mirroredVertically) {
-//        [self drawPipsWithHorizontalOffset:hoffset
-//                            verticalOffset:voffset
-//                                upsideDown:YES];
-//    }
-//}
-
-
-
-
 @end
-
-
-
-
-
-//   Draw Rect Anteile von superCard
-//    UIBezierPath *roundedRect = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:CORNER_RADIUS];
-
-//    [roundedRect addClip]; // Alles außerhalb wird abgeschnitten
-//    [[UIColor whiteColor] setFill]; // Inneres wird weiß gezeichnet bzw. Farbe festgelegt
-//    UIRectFill(self.bounds); // Und jetzt auch tatsächlich zeichnen
-//
-//    [[UIColor blackColor] setStroke];  // Schwarze Linienfarbe für Umrandung
-//    [roundedRect stroke];              // und zeichnen derselben
-//
-//    // Bild für die jeweilige Karte laden und einbringen (Bildname wird aus rank und suit zusammengesetzt
-//    if (self.faceUp) {  // Wenn Karte aufgedeckt
-//        UIImage *faceImage = [UIImage imageNamed:[NSString stringWithFormat:@"%@%@.jpg", [self rankAsString], self.suit]];
-//        if(faceImage) {
-//            // Bild wird in ein CGrect eingesetzt (Abstand zu den Rändern kann hier vorgegeben werden, was wir brauchen, um das "K♥" etc. nicht zu übermalen)
-//            CGRect imageRect = CGRectInset(self.bounds,
-//                                           self.bounds.size.width* (1.0 - self.faceCardScaleFactor),
-//                                           self.bounds.size.height * (1.0 - self.faceCardScaleFactor));
-//            [faceImage drawInRect:imageRect]; // Malen des Bildes
-//
-//        } else {
-//            // Pips sind die Karten ohne Bild und nur mit Karos etc, (davon so viele wie die Karte Punkte hat)
-//            [self drawPips];
-//        }
-//        [self drawCorners];    // Malt den Text, z.B. , in die linke obere und rechte untere Ecke
-//    } else { // Wenn Kartenrückseite sichtbar Rückseitenbild laden und gleich zeichnen
-//        [[UIImage imageNamed:@"cardback.png"] drawInRect:self.bounds];
-//    }
 

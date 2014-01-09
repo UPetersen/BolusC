@@ -278,6 +278,24 @@
     return [NSNumber numberWithFloat:(CGFloat) (hour + ((CGFloat) minute )/ 60.0)];
 }
 
+-(NSInteger) roundedHourOfDay {
+//    return [[NSNumber alloc] initWithInt:floor([self.hourOfDay doubleValue])];
+    return (NSInteger) floor([self.hourOfDay doubleValue]);
+}
+-(NSInteger) yearForWeekOfYear {
+    
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *components = [calendar components:NSYearForWeekOfYearCalendarUnit fromDate:self.timeStamp];
+    
+    return [components yearForWeekOfYear];
+}
+-(NSInteger) weekOfYear {
+    
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *components = [calendar components:NSWeekOfYearCalendarUnit fromDate:self.timeStamp];
+    
+    return [components weekOfYear];
+}
 
 ///*
 // *************** other stuff *********************************************************
@@ -328,7 +346,7 @@
         
         NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit)
                                                    fromDate:[self timeStamp]];
-        tmp = [NSString stringWithFormat:@"%ld", ([components year] * 10000) + ([components month]) * 100 + components.day];
+        tmp = [NSString stringWithFormat:@"%ld", (long)([components year] * 10000) + ([components month]) * 100 + components.day];
 #ifdef VERBOSE
         NSLog(@"tmp = %@", tmp);
 #endif
