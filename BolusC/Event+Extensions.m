@@ -282,6 +282,7 @@
 //    return [[NSNumber alloc] initWithInt:floor([self.hourOfDay doubleValue])];
     return (NSInteger) floor([self.hourOfDay doubleValue]);
 }
+
 -(NSInteger) yearForWeekOfYear {
     
     NSCalendar *calendar = [NSCalendar currentCalendar];
@@ -295,6 +296,21 @@
     NSDateComponents *components = [calendar components:NSWeekOfYearCalendarUnit fromDate:self.timeStamp];
     
     return [components weekOfYear];
+}
+
+-(NSDate *) day {
+    
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    
+    NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit) fromDate:self.timeStamp];
+    [components setHour:0];
+//    NSInteger dayAsInt = [components day];
+//    NSLog(@"dayAsInt %ld", dayAsInt);
+    
+    NSDate *dayAsDate = [calendar dateFromComponents:components];
+    
+//    NSLog(@"dayAsDayte %@", dayAsDate);
+    return dayAsDate;
 }
 
 ///*

@@ -11,7 +11,7 @@
 #import "Event+Extensions.h"
 
 
-@interface Events : NSObject
+@interface EventsStats : NSObject
 -(id) initWithArrayOfEvents: (NSArray *) events;
 
 @property (nonatomic, strong) NSNumber *bloodSugarAvg;

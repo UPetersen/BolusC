@@ -42,11 +42,13 @@
 // Time and date stuff
 -(NSNumber *) hourOfDay;
 
-@property (nonatomic) NSInteger roundedHourOfDay;
+//@property (nonatomic) NSInteger roundedHourOfDay;
+-(NSInteger) roundedHourOfDay;
 
 //-(NSNumber *) roundedHourOfDay;
 -(NSInteger) weekOfYear;
 -(NSInteger) yearForWeekOfYear;
--(NSInteger) roundedConsecutiveWeek;
+//-(NSInteger) roundedConsecutiveWeek;
+-(NSDate *) day;
 
 @end

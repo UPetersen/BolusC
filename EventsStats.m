@@ -6,12 +6,12 @@
 //  Copyright (c) 2014 Uwe Petersen. All rights reserved.
 //
 
-#import "Events.h"
+#import "EventsStats.h"
 #import "Event.h"
 #import "Event+Extensions.h"
 #import "NSCalendar+mySpecialCalculations.h"
 
-@interface Events()
+@interface EventsStats()
 
 @property (nonatomic, strong) NSArray *events;
 //@property (nonatomic, strong) NSNumber *chuSum;
@@ -27,7 +27,7 @@
 
 @end
 
-@implementation Events
+@implementation EventsStats
 
 -(id) init {
     self = [super init];
@@ -90,6 +90,11 @@
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bloodSugar > 0"];
         NSArray *eventsWithNonNilBloodSugar = [self.events filteredArrayUsingPredicate:predicate];
 
+        // return nil, if no event found with blood sugar values
+        if (!eventsWithNonNilBloodSugar.count) {
+            return _bloodSugarWeightedAvg;
+        }
+        
         NSTimeInterval tDelta, tOverallDelta; // is double
         tOverallDelta = [[[eventsWithNonNilBloodSugar lastObject]  timeStamp] timeIntervalSince1970 ]
                       - [[[eventsWithNonNilBloodSugar firstObject] timeStamp] timeIntervalSince1970 ];
