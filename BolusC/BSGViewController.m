@@ -9,7 +9,7 @@
 #import "BloodSugarGraphView.h"
 #import "Event.h"
 #import "Event+Extensions.h"
-#import "EventsStats.h"
+#import "EventsStatistic.h"
 #import "AppDelegate.h"
 
 @interface BSGViewController ()
@@ -53,38 +53,72 @@
         self.bloodSugarGraphView.Events = [NSArray arrayWithArray:self.fetchedResultsController.fetchedObjects];
         
         
+        /*
        // Tests mit valueForKeyPath zum ermitteln von Durchschnittswerten, kann auch für die Eingrenzung von Wertebereichen genutzt werden ...
         
-        Event *myEvent = [self.bloodSugarGraphView.Events lastObject];
-        
-        NSLog(@"hour of day: %@", myEvent.hourOfDay);
-        NSLog(@"rounded hour of day: %ld", (long)myEvent.roundedHourOfDay);
-        
-        NSLog(@"week of year: %ld", (long)myEvent.weekOfYear);
-        NSLog(@"Year for week of year: %ld", (long)myEvent.yearForWeekOfYear);
-
-        
-        // This is the real stuff:
-
-//        NSRange range = NSMakeRange(3, 306);
-//        Events *events = [[Events alloc] initWithArrayOfEvents:[self.fetchedResultsController.fetchedObjects subarrayWithRange:range]];
-        
-        // TODO: die Klasse Events sollte umbenannt werden in EventsStats
-        
+        // This is an array with all events in the database that were fetched (all events so far, can be limited some later date)
         NSArray *events = [NSArray arrayWithArray:self.fetchedResultsController.fetchedObjects];
-        EventsStats *eventsStats = [[EventsStats alloc] initWithArrayOfEvents:events] ;
+
+        // Create object with statistical data for the array of events
+        EventsStatistic *eventsStatForAllEvents = [[EventsStatistic alloc] initWithArrayOfEvents:events] ;
         
-        // Loop over the array of events over the complete date range, week for week for week
-        NSUInteger index = 0;
-        NSDate *lastDay, *day;
-        NSUInteger indexFirstDayOfWeek, indexLastDayOfWeek;
-        indexLastDayOfWeek = 0;
+        // Retreive an array with arrays of events for time intervals of n days from the set of statistical data
+        NSArray *arrayWithArrayOfEventsInTimeIntervals = [eventsStatForAllEvents arrayOfEventsForNumberOfConsecutiveDays:0];
+        
+        // Loop over the time intervalls
+        for (NSArray *eventsInTimeInterval in arrayWithArrayOfEventsInTimeIntervals) {
+            
+            EventsStatistic *eventsStatForEventsInTimeInterval = [[EventsStatistic alloc] initWithArrayOfEvents:eventsInTimeInterval];
+        
+            NSLog(@"   Stats for the week from %@ to %@", eventsStatForEventsInTimeInterval.firstDay, eventsStatForEventsInTimeInterval.lastDay);
+            NSLog(@"   number of days: %lu", (unsigned long) eventsStatForEventsInTimeInterval.numberOfDays);
+            NSLog(@"   week from %@ to %@ BZ %@", eventsStatForEventsInTimeInterval.firstDay, eventsStatForEventsInTimeInterval.lastDay, eventsStatForEventsInTimeInterval.bloodSugarWeightedAvg);
+            NSLog(@"   Anzahl Tagebucheinträge: %lu", (unsigned long) eventsStatForEventsInTimeInterval.numberOfEntries);
+            NSLog(@"   blood sugar avg (min-max); %@ (%@-%@)", eventsStatForEventsInTimeInterval.bloodSugarAvg, eventsStatForEventsInTimeInterval.bloodSugarMin, eventsStatForEventsInTimeInterval.bloodSugarMax);
+            NSLog(@"   first day: %@, last day: %@, number of days: %ld", eventsStatForEventsInTimeInterval.firstDay, eventsStatForEventsInTimeInterval.lastDay, (long)eventsStatForEventsInTimeInterval.numberOfDays);
+            NSLog(@"   chu daily avg: %@ and chuFactor %@", eventsStatForEventsInTimeInterval.chuDailyAvg, eventsStatForEventsInTimeInterval.chuFactorAvg);
+            NSLog(@"   fpu daily avg: %@ and fpuFactor %@", eventsStatForEventsInTimeInterval.fpuDailyAvg, eventsStatForEventsInTimeInterval.fpuFactorAvg);
+            
+            NSLog(@"   Durchschnitte von Insulin, Bolus, NPH und Basal): %@ (%@ + %@ + %@ ",eventsStatForEventsInTimeInterval.insulinDailyAvg, eventsStatForEventsInTimeInterval.shortBolusDailyAvg, eventsStatForEventsInTimeInterval.fpuBolusDailyAvg, eventsStatForEventsInTimeInterval.basalDosisDailyAvg);
+            
+            NSLog(@"   Mittlerer gewichtet Blutzucker und mittlerer Blutzucker: %@ (%@)", eventsStatForEventsInTimeInterval.bloodSugarWeightedAvg, eventsStatForEventsInTimeInterval.bloodSugarAvg);
+            NSLog(@"   HBA1C: %@", eventsStatForEventsInTimeInterval.hba1c);
+            NSLog(@"   Nahrungsdurchschn: %@ kcal",eventsStatForEventsInTimeInterval.energyDailyAvg);
+        
+        }
+         */
+        
+      /*
+       
+       // This is the real stuff:
 
-        NSTimeInterval sevenDaysBack = -28.0 * 24.0 * 3600.0;
+       //        Event *myEvent = [self.bloodSugarGraphView.Events lastObject];
+       //        NSLog(@"hour of day: %@", myEvent.hourOfDay);
+       //        NSLog(@"rounded hour of day: %ld", (long)myEvent.roundedHourOfDay);
+       //
+       //        NSLog(@"week of year: %ld", (long)myEvent.weekOfYear);
+       //        NSLog(@"Year for week of year: %ld", (long)myEvent.yearForWeekOfYear);
+       //
 
-        lastDay = eventsStats.lastDay;
-        NSLog(@"days (first|last): %@ | %@", eventsStats.firstDay, eventsStats.lastDay);
+       EventsStatistic *eventsStats = [[EventsStatistic alloc] initWithArrayOfEvents:events] ;
 
+       
+       //        NSRange range = NSMakeRange(3, 306);
+       //        Events *events = [[Events alloc] initWithArrayOfEvents:[self.fetchedResultsController.fetchedObjects subarrayWithRange:range]];
+       
+       // TODO: die Klasse Events sollte umbenannt werden in EventsStats
+       
+       // Loop over the array of events over the complete date range, week for week for week
+       NSUInteger index = 0;
+       NSDate *lastDay, *day;
+       NSUInteger indexFirstDayOfWeek, indexLastDayOfWeek;
+       indexLastDayOfWeek = 0;
+       
+       NSTimeInterval sevenDaysBack = -28.0 * 24.0 * 3600.0;
+       
+       lastDay = eventsStats.lastDay;
+       NSLog(@"days (first|last): %@ | %@", eventsStats.firstDay, eventsStats.lastDay);
+       
 
         // Loop over all events in the array, from the last day (i.e. the most recent day) until the end of the array is reached.
         while (YES) {
@@ -109,7 +143,7 @@
                 indexFirstDayOfWeek = index;
                 
                 NSRange range = NSMakeRange(indexLastDayOfWeek, indexFirstDayOfWeek - indexLastDayOfWeek+1);
-                EventsStats *weekStats = [[EventsStats alloc] initWithArrayOfEvents:[events subarrayWithRange:range]];
+                EventsStatistic *weekStats = [[EventsStatistic alloc] initWithArrayOfEvents:[events subarrayWithRange:range]];
                 NSLog(@"   Stats for the week from %@ to %@", day, lastDay);
                 NSLog(@"   number of days: %lu", (unsigned long) weekStats.numberOfDays);
                 NSLog(@"   week from %@ to %@ BZ %@", weekStats.firstDay, weekStats.lastDay, weekStats.bloodSugarWeightedAvg);
@@ -153,7 +187,7 @@
         NSLog(@"Mittlerer gewichtet Blutzucker und mittlerer Blutzucker: %@ (%@)", eventsStats.bloodSugarWeightedAvg, eventsStats.bloodSugarAvg);
         NSLog(@"HBA1C: %@", eventsStats.hba1c);
         NSLog(@"Nahrungsdurchschn: %@ kcal",eventsStats.energyDailyAvg);
-        
+        */
         
     } else {
         self.bloodSugarGraphView.Events = nil;

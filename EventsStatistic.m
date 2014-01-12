@@ -6,12 +6,12 @@
 //  Copyright (c) 2014 Uwe Petersen. All rights reserved.
 //
 
-#import "EventsStats.h"
+#import "EventsStatistic.h"
 #import "Event.h"
 #import "Event+Extensions.h"
 #import "NSCalendar+mySpecialCalculations.h"
 
-@interface EventsStats()
+@interface EventsStatistic()
 
 @property (nonatomic, strong) NSArray *events;
 //@property (nonatomic, strong) NSNumber *chuSum;
@@ -27,7 +27,7 @@
 
 @end
 
-@implementation EventsStats
+@implementation EventsStatistic
 
 -(id) init {
     self = [super init];
@@ -67,6 +67,54 @@
     }
     return self;
 }
+
+-(NSArray *) arrayOfEventsForNumberOfConsecutiveDays: (NSInteger) days {
+    
+
+    NSMutableArray *arrayOfEventArrays = [[NSMutableArray alloc] init];
+    
+
+    NSLog(@"days (first|last): %@ | %@", self.firstDay, self.lastDay);
+    
+
+    NSTimeInterval timeInterval = -days * 24.0 * 3600.0;  // The time intervall, defining the unit of events to be
+    NSUInteger index = 0;                                 // The index, used for looping throught the array of events
+    NSUInteger indexLastDay = 0;                          // The index on the most recent day of an intervall
+    NSDate *lastDayOfTimeIntervall = self.lastDay;        // The date of the most recent day of an intervall
+
+    // Loop over all events which shall be combined by units of "days" days from the most recent day to the most former day
+    // the event_array used as input must be sorted from the most recent to the most former day
+
+    for (Event *event in self.events) {
+        
+        // Check if the number of days have been passed through or end of events array is reached
+        if ([event.day compare:[NSDate dateWithTimeInterval:timeInterval sinceDate:lastDayOfTimeIntervall]] == NSOrderedAscending
+            || index >= self.events.count-1) {
+            
+            // Range for the set of events
+            NSRange range = NSMakeRange(indexLastDay, index - indexLastDay );
+            
+            // Add this set of events to the result array
+            [arrayOfEventArrays addObject: [self.events subarrayWithRange:range]];
+            
+            // prepare for search of next time intervall
+            indexLastDay = index;
+            lastDayOfTimeIntervall = event.day;
+        }
+        
+        index++;
+    }
+    return arrayOfEventArrays;
+    
+}
+
+-(NSUInteger) numberOfEntries {
+    if (!_numberOfEntries) {
+        _numberOfEntries = self.events.count;
+    }
+    return _numberOfEntries;
+}
+
 
 -(NSNumber *) hba1c {
     /*

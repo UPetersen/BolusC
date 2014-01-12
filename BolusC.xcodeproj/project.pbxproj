@@ -36,8 +36,10 @@
 		C64713A618685E6000C0419E /* BloodSugarGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = C64713A418685E6000C0419E /* BloodSugarGraphView.m */; };
 		C64713A918685E7C00C0419E /* TVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C64713A818685E7C00C0419E /* TVCell.m */; };
 		C64713B518686AA200C0419E /* BolusC.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C64713B218686AA200C0419E /* BolusC.xcdatamodeld */; };
-		C6AE929D187AE07800370E65 /* EventsStats.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE929C187AE07800370E65 /* EventsStats.m */; };
+		C6AE929D187AE07800370E65 /* EventsStatistic.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE929C187AE07800370E65 /* EventsStatistic.m */; };
 		C6AE92A0187B320000370E65 /* NSCalendar+mySpecialCalculations.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE929F187B320000370E65 /* NSCalendar+mySpecialCalculations.m */; };
+		C6B3D81A18817E6F004ADDA5 /* StatisticSetttingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C6B3D81918817E6F004ADDA5 /* StatisticSetttingsTableViewController.m */; };
+		C6B3D81D1882B493004ADDA5 /* StatisticDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C6B3D81C1882B493004ADDA5 /* StatisticDetailTableViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,10 +101,14 @@
 		C64713A818685E7C00C0419E /* TVCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCell.m; sourceTree = "<group>"; };
 		C64713B318686AA200C0419E /* BolusC 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "BolusC 2.xcdatamodel"; sourceTree = "<group>"; };
 		C64713B418686AA200C0419E /* BolusC.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BolusC.xcdatamodel; sourceTree = "<group>"; };
-		C6AE929B187AE07800370E65 /* EventsStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventsStats.h; sourceTree = "<group>"; };
-		C6AE929C187AE07800370E65 /* EventsStats.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventsStats.m; sourceTree = "<group>"; };
+		C6AE929B187AE07800370E65 /* EventsStatistic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventsStatistic.h; sourceTree = "<group>"; };
+		C6AE929C187AE07800370E65 /* EventsStatistic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventsStatistic.m; sourceTree = "<group>"; };
 		C6AE929E187B320000370E65 /* NSCalendar+mySpecialCalculations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSCalendar+mySpecialCalculations.h"; sourceTree = "<group>"; };
 		C6AE929F187B320000370E65 /* NSCalendar+mySpecialCalculations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSCalendar+mySpecialCalculations.m"; sourceTree = "<group>"; };
+		C6B3D81818817E6F004ADDA5 /* StatisticSetttingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatisticSetttingsTableViewController.h; sourceTree = "<group>"; };
+		C6B3D81918817E6F004ADDA5 /* StatisticSetttingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatisticSetttingsTableViewController.m; sourceTree = "<group>"; };
+		C6B3D81B1882B493004ADDA5 /* StatisticDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatisticDetailTableViewController.h; sourceTree = "<group>"; };
+		C6B3D81C1882B493004ADDA5 /* StatisticDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatisticDetailTableViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,8 +140,8 @@
 		C64713391868589C00C0419E = {
 			isa = PBXGroup;
 			children = (
-				C6AE929B187AE07800370E65 /* EventsStats.h */,
-				C6AE929C187AE07800370E65 /* EventsStats.m */,
+				C6AE929B187AE07800370E65 /* EventsStatistic.h */,
+				C6AE929C187AE07800370E65 /* EventsStatistic.m */,
 				C647134D1868589C00C0419E /* BolusC */,
 				C64713761868589D00C0419E /* BolusCTests */,
 				C64713441868589C00C0419E /* Frameworks */,
@@ -169,6 +175,10 @@
 			children = (
 				C64713561868589C00C0419E /* AppDelegate.h */,
 				C64713571868589C00C0419E /* AppDelegate.m */,
+				C6B3D81818817E6F004ADDA5 /* StatisticSetttingsTableViewController.h */,
+				C6B3D81918817E6F004ADDA5 /* StatisticSetttingsTableViewController.m */,
+				C6B3D81B1882B493004ADDA5 /* StatisticDetailTableViewController.h */,
+				C6B3D81C1882B493004ADDA5 /* StatisticDetailTableViewController.m */,
 				C647139318685DEC00C0419E /* Main_iPhone.storyboard */,
 				C647135C1868589C00C0419E /* Main_iPad.storyboard */,
 				C64713A318685E6000C0419E /* BloodSugarGraphView.h */,
@@ -356,7 +366,9 @@
 				C647139218685CCB00C0419E /* BSKeyboardControls.m in Sources */,
 				C64713A018685E4D00C0419E /* NSNumber+UPNumberFormats.m in Sources */,
 				C647139A18685E1800C0419E /* MasterViewController.m in Sources */,
-				C6AE929D187AE07800370E65 /* EventsStats.m in Sources */,
+				C6B3D81A18817E6F004ADDA5 /* StatisticSetttingsTableViewController.m in Sources */,
+				C6B3D81D1882B493004ADDA5 /* StatisticDetailTableViewController.m in Sources */,
+				C6AE929D187AE07800370E65 /* EventsStatistic.m in Sources */,
 				C64713A918685E7C00C0419E /* TVCell.m in Sources */,
 				C647138E18685C6B00C0419E /* Event+Extensions.m in Sources */,
 				C64713581868589C00C0419E /* AppDelegate.m in Sources */,

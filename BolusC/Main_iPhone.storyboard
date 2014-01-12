@@ -1058,6 +1058,7 @@
                     <connections>
                         <segue destination="3" kind="relationship" relationship="viewControllers" id="IRa-ju-u6p"/>
                         <segue destination="35O-fe-d49" kind="relationship" relationship="viewControllers" id="1UM-O7-JI8"/>
+                        <segue destination="Ybh-0X-0R2" kind="relationship" relationship="viewControllers" id="C1x-dl-NlX"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nx4-4k-hrk" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1155,6 +1156,105 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ddg-cL-jNg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="11" y="785"/>
+        </scene>
+        <!--Statistic Setttings Table View Controller - Statistik-Auswahl-->
+        <scene sceneID="DSP-jl-HtR">
+            <objects>
+                <tableViewController id="I9x-yV-EeN" customClass="StatisticSetttingsTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="kV0-in-DiU" customClass="StatisticSettingsTableViewController">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Statistic Settings Cell" textLabel="bI6-8U-WTS" style="IBUITableViewCellStyleDefault" id="J1M-0O-Zye">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="J1M-0O-Zye" id="Ok2-Tx-1zw">
+                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="bI6-8U-WTS">
+                                            <rect key="frame" x="15" y="0.0" width="270" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="5Po-TT-vNG" kind="push" identifier="Segue statistic details" id="QeL-Ko-sy8"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Statistik-Auswahl" id="cXs-fU-s2f"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bv7-ue-kg1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="479" y="1435"/>
+        </scene>
+        <!--Statistic Detail Table View Controller - Statistik-->
+        <scene sceneID="dIX-0u-Mkf">
+            <objects>
+                <tableViewController id="5Po-TT-vNG" customClass="StatisticDetailTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="o7F-VA-ho3">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Statistic detail cell" textLabel="vvP-rc-CzL" detailTextLabel="eLE-vL-NX7" style="IBUITableViewCellStyleValue2" id="ftK-9Q-0yf">
+                                <rect key="frame" x="0.0" y="119" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ftK-9Q-0yf" id="C1s-pa-LJS">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vvP-rc-CzL">
+                                            <rect key="frame" x="15" y="13" width="91" height="17"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Detail" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eLE-vL-NX7">
+                                            <rect key="frame" x="112" y="13" width="37" height="17"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="5Po-TT-vNG" id="PNn-4K-4Df"/>
+                            <outlet property="delegate" destination="5Po-TT-vNG" id="QDR-wg-YER"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Statistik" id="8lP-Hn-kYg"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bhK-d5-W6N" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="871" y="1435"/>
+        </scene>
+        <!--Navigation Controller - Statistiken-->
+        <scene sceneID="i3d-xd-5pF">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="Ybh-0X-0R2" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Statistiken" id="kum-Hg-YOx"/>
+                    <navigationItem key="navigationItem" id="7oY-pr-qyc"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="DzC-zE-MD7">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="I9x-yV-EeN" kind="relationship" relationship="rootViewController" id="7oU-TT-Woa"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="a5P-cA-nKF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="16" y="1435"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

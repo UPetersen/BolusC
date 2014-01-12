@@ -11,7 +11,7 @@
 #import "Event+Extensions.h"
 
 
-@interface EventsStats : NSObject
+@interface EventsStatistic : NSObject
 -(id) initWithArrayOfEvents: (NSArray *) events;
 
 @property (nonatomic, strong) NSNumber *bloodSugarAvg;
@@ -42,5 +42,8 @@
 @property (nonatomic, strong) NSDate *firstDay;
 @property (nonatomic, strong) NSDate *lastDay;
 @property (nonatomic) NSInteger numberOfDays;
+@property (nonatomic) NSUInteger numberOfEntries;
+
+-(NSArray *) arrayOfEventsForNumberOfConsecutiveDays: (NSInteger) days;
 
 @end
