@@ -277,6 +277,9 @@
         
         [self.event setChuBolusForChuFactorForChu];                                           // chu, chuFactor  -> chuBolus
         [self displayChuBolus];                                                               // chuBolus        -> textfield for chuBolus
+
+        [self.event setShortBolusForCorrectionBolusForChuBolus];                                   // correctionBolus, chuBolus       -> shortBolus
+        [self displayShortBolus];                                                                  // shortBolus                      -> label for shortBolus
     }
     else if (theTextField == self.textFieldProtein){
         self.event.protein = [self.numberFormatter numberFromString:self.textFieldProtein.text];  // textfield       -> protein

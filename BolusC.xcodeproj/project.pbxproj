@@ -101,8 +101,8 @@
 		C64713A818685E7C00C0419E /* TVCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCell.m; sourceTree = "<group>"; };
 		C64713B318686AA200C0419E /* BolusC 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "BolusC 2.xcdatamodel"; sourceTree = "<group>"; };
 		C64713B418686AA200C0419E /* BolusC.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BolusC.xcdatamodel; sourceTree = "<group>"; };
-		C6AE929B187AE07800370E65 /* EventsStatistic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventsStatistic.h; sourceTree = "<group>"; };
-		C6AE929C187AE07800370E65 /* EventsStatistic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventsStatistic.m; sourceTree = "<group>"; };
+		C6AE929B187AE07800370E65 /* EventsStatistic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EventsStatistic.h; path = ../EventsStatistic.h; sourceTree = "<group>"; };
+		C6AE929C187AE07800370E65 /* EventsStatistic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EventsStatistic.m; path = ../EventsStatistic.m; sourceTree = "<group>"; };
 		C6AE929E187B320000370E65 /* NSCalendar+mySpecialCalculations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSCalendar+mySpecialCalculations.h"; sourceTree = "<group>"; };
 		C6AE929F187B320000370E65 /* NSCalendar+mySpecialCalculations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSCalendar+mySpecialCalculations.m"; sourceTree = "<group>"; };
 		C6B3D81818817E6F004ADDA5 /* StatisticSetttingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatisticSetttingsTableViewController.h; sourceTree = "<group>"; };
@@ -140,8 +140,6 @@
 		C64713391868589C00C0419E = {
 			isa = PBXGroup;
 			children = (
-				C6AE929B187AE07800370E65 /* EventsStatistic.h */,
-				C6AE929C187AE07800370E65 /* EventsStatistic.m */,
 				C647134D1868589C00C0419E /* BolusC */,
 				C64713761868589D00C0419E /* BolusCTests */,
 				C64713441868589C00C0419E /* Frameworks */,
@@ -237,6 +235,8 @@
 		C647138B18685C2400C0419E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				C6AE929B187AE07800370E65 /* EventsStatistic.h */,
+				C6AE929C187AE07800370E65 /* EventsStatistic.m */,
 				C647138C18685C6B00C0419E /* Event+Extensions.h */,
 				C647138D18685C6B00C0419E /* Event+Extensions.m */,
 				C6AE929E187B320000370E65 /* NSCalendar+mySpecialCalculations.h */,

@@ -14,6 +14,7 @@
 -(NSString *)stringWithNumberStyle3SigDigits;
 -(NSString *)stringWithNumberStyle2SigDigits;
 
+-(NSString *)stringWithNumberStyle0maxDigits;
 -(NSString *)stringWithNumberStyle1maxDigits;
 -(NSString *)stringWithNumberStyle2maxDigits;
 

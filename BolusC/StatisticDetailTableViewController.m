@@ -10,10 +10,14 @@
 #import "Event.h"
 #import "Event+Extensions.h"
 #import "EventsStatistic.h"
+#import "NSNumber+UPNumberFormats.h"
 
 @interface StatisticDetailTableViewController ()
 
 @property (nonatomic, strong) NSArray *arrayWithEventsStatForEventsInTimeInterval;
+@property (nonatomic, strong) NSDateFormatter *dateFormatterForDate;
+@property (nonatomic, strong) NSDateFormatter *dateFormatterForShortDate;
+@property (nonatomic, strong) NSDateFormatter *dateFormatterForDateWithWeekDay;
 
 @end
 
@@ -63,15 +67,23 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    NSLog(@"number of sections: %lu", (long) self.eventsStatInTimeIntervals.count);
-    return self.eventsStatInTimeIntervals.count;
+    if (self.groupByTime == YES) {
+        NSLog(@"number of sections: %lu", (long) self.eventsStatInTimeIntervals.count);
+        return self.eventsStatInTimeIntervals.count;
+    } else {
+        return 15;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
 //    NSLog(@"number of rows in section no %ld: %lu", (long) section, (unsigned long)[[self.arrayWithArrayOfEventsInTimeIntervals objectAtIndex:section ] count]);
-    return 15;
+    if (self.groupByTime == YES) {
+        return 15;
+    } else {
+        return self.eventsStatInTimeIntervals.count;
+    }
 }
 
 -(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -80,8 +92,69 @@
 
 -(NSString *) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
 
-    EventsStatistic *eventsStatForEventsInTimeInterval = [self.eventsStatInTimeIntervals objectAtIndex:section];
-    return [NSString stringWithFormat:@"%@ (%ld Tage)", eventsStatForEventsInTimeInterval.firstDay.description, (long) eventsStatForEventsInTimeInterval.numberOfDays];
+    if (self.groupByTime == YES) {
+        EventsStatistic *eventsStatForEventsInTimeInterval = [self.eventsStatInTimeIntervals objectAtIndex:section];
+        return [NSString stringWithFormat:@"%@ (%ld Tage)", [self.dateFormatterForDateWithWeekDay stringFromDate:eventsStatForEventsInTimeInterval.firstDay], (long) eventsStatForEventsInTimeInterval.numberOfDays];
+    } else {
+        EventsStatistic *eventsStatForEventsInTimeInterval = [self.eventsStatInTimeIntervals objectAtIndex:0];
+        NSString *sectionString = [[NSString alloc] init];
+        switch (section) {
+            case 0:
+                sectionString =  @"Blutzucker";
+                break;
+            case 1:
+                sectionString =  @"HbA1c";
+                break;
+            case 2:
+                sectionString =  @"Kohlehydrate";
+                break;
+            case 3:
+                sectionString =  @"KHE-Faktor";
+                break;
+            case 4:
+                sectionString =  @"Fett/Eiweiß";
+                break;
+            case 5:
+                sectionString =  @"FPU-Faktor";
+                break;
+            case 6:
+                sectionString =  @"Kalorien";
+                break;
+            case 7:
+                sectionString =  @"Insulinsumme";
+                break;
+            case 8:
+                sectionString =  @"Bolusinsulin";
+                break;
+            case 9:
+                sectionString =  @"NPH-Insulin";
+                break;
+            case 10:
+                sectionString =  @"Basalinsulin";
+                break;
+            case 11:
+                sectionString =  @"von";
+                break;
+            case 12:
+                sectionString =  @"bis";
+                break;
+            case 13:
+                sectionString =  @"Tage";
+                break;
+            case 14:
+                sectionString =  @"Einträge";
+                break;
+                
+            default:
+                sectionString =  @"Error in Case";
+                break;
+        }
+        sectionString = [NSString stringWithFormat:@"%@ (je %ld Tage)", sectionString, (long) eventsStatForEventsInTimeInterval.numberOfDays];
+        return sectionString;
+    }
+    
+//    EventsStatistic *eventsStatForEventsInTimeInterval = [self.eventsStatInTimeIntervals objectAtIndex:section];
+//    return [NSString stringWithFormat:@"%@ (%ld Tage)", [self.dateFormatterForDateWithWeekDay stringFromDate:eventsStatForEventsInTimeInterval.firstDay], (long) eventsStatForEventsInTimeInterval.numberOfDays];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -89,119 +162,177 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Statistic detail cell" forIndexPath:indexPath];
     
     // Configure the cell...
-//    EventsStatistic *eventsStatForEventsInTimeInterval = [[EventsStatistic alloc] initWithArrayOfEvents:[self.arrayWithArrayOfEventsInTimeIntervals objectAtIndex:indexPath.row]];
-//    
-    EventsStatistic *eventsStatForEventsInTimeInterval = [self.eventsStatInTimeIntervals objectAtIndex:indexPath.section];
     
-    switch (indexPath.row) {
-        case 0:
-            cell.textLabel.text = @"Blutzucker";
-            
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@-%@) mg/dl",
-                                         eventsStatForEventsInTimeInterval.bloodSugarWeightedAvg,
-                                         eventsStatForEventsInTimeInterval.bloodSugarMin,
-                                         eventsStatForEventsInTimeInterval.bloodSugarMax];
-            break;
-        case 1:
-            cell.textLabel.text = @"HBA1C";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@",
-                                         eventsStatForEventsInTimeInterval.hba1c];
-            break;
-        case 2:
-            cell.textLabel.text = @"Kohlehydrate";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ KHE",
-                                         eventsStatForEventsInTimeInterval.chuDailyAvg];
-            break;
-        case 3:
-            cell.textLabel.text = @"KHE-Faktor";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE/KHE",
-                                         eventsStatForEventsInTimeInterval.chuFactorAvg];
-            break;
-        case 4:
-            cell.textLabel.text = @"Fett/Eiweiß";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ FPE",
-                                         eventsStatForEventsInTimeInterval.fpuDailyAvg];
-            break;
-        case 5:
-            cell.textLabel.text = @"FPU-Faktor";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@",
-                                         eventsStatForEventsInTimeInterval.fpuFactorAvg];
-            break;
-        case 6:
-            cell.textLabel.text = @"Kalorien";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ kcal",
-                                         eventsStatForEventsInTimeInterval.energyDailyAvg];
-            break;
-        case 7:
-            cell.textLabel.text = @"Insulin";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE",
-                                         eventsStatForEventsInTimeInterval.insulinDailyAvg];
-            break;
-        case 8:
-            cell.textLabel.text = @"Korrektur/Kohlehydrate";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE",
-                                         eventsStatForEventsInTimeInterval.shortBolusDailyAvg];
-            break;
-        case 9:
-            cell.textLabel.text = @"Fett/Protein";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE",
-                                         eventsStatForEventsInTimeInterval.fpuBolusDailyAvg];
-            break;
-            break;
-        case 10:
-            cell.textLabel.text = @"Basal";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE",
-                                         eventsStatForEventsInTimeInterval.basalDosisDailyAvg];
-            break;
-        case 11:
-            cell.textLabel.text = @"von";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@",
-                                         eventsStatForEventsInTimeInterval.firstDay];
-            break;
-        case 12:
-            cell.textLabel.text = @"bis";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@",
-                                         eventsStatForEventsInTimeInterval.lastDay];
-            break;
-        case 13:
-            cell.textLabel.text = @"Anzahl Tage";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld",
-                                         (long) eventsStatForEventsInTimeInterval.numberOfDays];
-            break;
-        case 14:
-            cell.textLabel.text = @"Tagebucheinträge";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld",
-                                         (long) eventsStatForEventsInTimeInterval.numberOfEntries];
-            break;
-           
+    if (self.groupByTime == YES) {
 
-        default:
-            cell.textLabel.text = @"Error in Case";
-            cell.detailTextLabel.text = @"Uwe, you gotta check this";
-            break;
-    }
+        EventsStatistic *eventsStatForEventsInTimeInterval = [self.eventsStatInTimeIntervals objectAtIndex:indexPath.section];
+        switch (indexPath.row) {
+            case 0:
+                cell.textLabel.text = @"Blutzucker";
+                
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@-%@) mg/dl",
+                                             [eventsStatForEventsInTimeInterval.bloodSugarWeightedAvg stringWithNumberStyle0maxDigits],
+                                             eventsStatForEventsInTimeInterval.bloodSugarMin,
+                                             eventsStatForEventsInTimeInterval.bloodSugarMax];
+                break;
+            case 1:
+                cell.textLabel.text = @"HbA1c";
+                cell.detailTextLabel.text = [eventsStatForEventsInTimeInterval.hba1c stringWithNumberStyle1maxDigits];
+                break;
+            case 2:
+                cell.textLabel.text = @"Kohlehydrate";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ KHE",
+                                             [eventsStatForEventsInTimeInterval.chuDailyAvg stringWithNumberStyle1maxDigits]];
+                break;
+            case 3:
+                cell.textLabel.text = @"KHE-Faktor";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@ eff.) IE/KHE",
+                                             [eventsStatForEventsInTimeInterval.chuFactorAvg stringWithNumberStyle2maxDigits],
+                                             [eventsStatForEventsInTimeInterval.effectiveChuFactorAvg stringWithNumberStyle2maxDigits]];
+                break;
+            case 4:
+                cell.textLabel.text = @"Fett/Eiweiß";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ FPE",
+                                             [eventsStatForEventsInTimeInterval.fpuDailyAvg stringWithNumberStyle1maxDigits]];
+                break;
+            case 5:
+                cell.textLabel.text = @"FPU-Faktor";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@ eff.) IE/KHE",
+                                             [eventsStatForEventsInTimeInterval.fpuFactorAvg stringWithNumberStyle2maxDigits],
+                                             [eventsStatForEventsInTimeInterval.effectiveFpuFactorAvg stringWithNumberStyle2maxDigits]];
+                break;
+            case 6:
+                cell.textLabel.text = @"Kalorien";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ kcal",
+                                             [eventsStatForEventsInTimeInterval.energyDailyAvg stringWithNumberStyle0maxDigits]];
+                break;
+            case 7:
+                cell.textLabel.text = @"Insulinsumme";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE",
+                                             [eventsStatForEventsInTimeInterval.insulinDailyAvg stringWithNumberStyle1maxDigits]];
+                break;
+            case 8:
+                cell.textLabel.text = @"Bolusinsulin";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@ Korr.) IE",
+                                             [eventsStatForEventsInTimeInterval.shortBolusDailyAvg stringWithNumberStyle1maxDigits],
+                                             [eventsStatForEventsInTimeInterval.correctionBolusDailyAvg stringWithNumberStyle2maxDigits]];
+                break;
+            case 9:
+                cell.textLabel.text = @"NPH-Insulin";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE",
+                                             [eventsStatForEventsInTimeInterval.fpuBolusDailyAvg stringWithNumberStyle1maxDigits]];
+                break;
+                break;
+            case 10:
+                cell.textLabel.text = @"Basalinsulin";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE",
+                                             [eventsStatForEventsInTimeInterval.basalDosisDailyAvg stringWithNumberStyle1maxDigits]];
+                break;
+            case 11:
+                cell.textLabel.text = @"von";
+                cell.detailTextLabel.text = [self.dateFormatterForDateWithWeekDay stringFromDate:eventsStatForEventsInTimeInterval.firstDay];
+                break;
+            case 12:
+                cell.textLabel.text = @"bis";
+                cell.detailTextLabel.text = [self.dateFormatterForDateWithWeekDay stringFromDate:eventsStatForEventsInTimeInterval.lastDay];
+                break;
+            case 13:
+                cell.textLabel.text = @"Tage";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld",
+                                             (long) eventsStatForEventsInTimeInterval.numberOfDays];
+                break;
+            case 14:
+                cell.textLabel.text = @"Einträge";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld",
+                                             (long) eventsStatForEventsInTimeInterval.numberOfEntries];
+                break;
+                
+            default:
+                cell.textLabel.text = @"Error in Case";
+                cell.detailTextLabel.text = @"Uwe, you gotta check this";
+                break;
+        }
+
     
+    } else {
+        EventsStatistic *eventsStatForEventsInTimeInterval = [self.eventsStatInTimeIntervals objectAtIndex:indexPath.row];
+        cell.textLabel.text = [NSString stringWithFormat:@"%@-%@",
+                               [self.dateFormatterForShortDate stringFromDate:eventsStatForEventsInTimeInterval.firstDay],
+                               [self.dateFormatterForShortDate stringFromDate:eventsStatForEventsInTimeInterval.lastDay]];
+        
+        switch (indexPath.section) {
+            case 0:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@\t(%@-%@) mg/dl",
+                                             [eventsStatForEventsInTimeInterval.bloodSugarWeightedAvg stringWithNumberStyle0maxDigits],
+                                             eventsStatForEventsInTimeInterval.bloodSugarMin,
+                                             eventsStatForEventsInTimeInterval.bloodSugarMax];
+                break;
+            case 1:
+                cell.detailTextLabel.text = [eventsStatForEventsInTimeInterval.hba1c stringWithNumberStyle1maxDigits];
+                break;
+            case 2:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ KHE",
+                                             [eventsStatForEventsInTimeInterval.chuDailyAvg stringWithNumberStyle1maxDigits]];
+                break;
+            case 3:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@ eff.) IE/KHE",
+                                             [eventsStatForEventsInTimeInterval.chuFactorAvg stringWithNumberStyle2maxDigits],
+                                             [eventsStatForEventsInTimeInterval.effectiveChuFactorAvg stringWithNumberStyle2maxDigits]];
+                break;
+            case 4:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ FPE",
+                                             [eventsStatForEventsInTimeInterval.fpuDailyAvg stringWithNumberStyle1maxDigits]];
+                break;
+            case 5:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@ eff.) IE/KHE",
+                                             [eventsStatForEventsInTimeInterval.fpuFactorAvg stringWithNumberStyle2maxDigits],
+                                             [eventsStatForEventsInTimeInterval.effectiveFpuFactorAvg stringWithNumberStyle2maxDigits]];
+                break;
+            case 6:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ kcal",
+                                             [eventsStatForEventsInTimeInterval.energyDailyAvg stringWithNumberStyle0maxDigits]];
+                break;
+            case 7:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE",
+                                             [eventsStatForEventsInTimeInterval.insulinDailyAvg stringWithNumberStyle1maxDigits]];
+                break;
+            case 8:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@ Korr.) IE",
+                                             [eventsStatForEventsInTimeInterval.shortBolusDailyAvg stringWithNumberStyle1maxDigits],
+                                             [eventsStatForEventsInTimeInterval.correctionBolusDailyAvg stringWithNumberStyle2maxDigits]];
+                break;
+            case 9:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE",
+                                             [eventsStatForEventsInTimeInterval.fpuBolusDailyAvg stringWithNumberStyle1maxDigits]];
+                break;
+                break;
+            case 10:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE",
+                                             [eventsStatForEventsInTimeInterval.basalDosisDailyAvg stringWithNumberStyle1maxDigits]];
+                break;
+            case 11:
+                cell.detailTextLabel.text = [self.dateFormatterForDateWithWeekDay stringFromDate:eventsStatForEventsInTimeInterval.firstDay];
+                break;
+            case 12:
+                cell.detailTextLabel.text = [self.dateFormatterForDateWithWeekDay stringFromDate:eventsStatForEventsInTimeInterval.lastDay];
+                break;
+            case 13:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld",
+                                             (long) eventsStatForEventsInTimeInterval.numberOfDays];
+                break;
+            case 14:
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld",
+                                             (long) eventsStatForEventsInTimeInterval.numberOfEntries];
+                break;
+                
+            default:
+                cell.detailTextLabel.text = @"Uwe, you gotta check this";
+                break;
+        }
+    }
     
     return cell;
 }
-
-
-
-
-//                NSLog(@"   Stats for the week from %@ to %@", eventsStatForEventsInTimeInterval.firstDay, eventsStatForEventsInTimeInterval.lastDay);
-//                NSLog(@"   number of days: %lu", (unsigned long) eventsStatForEventsInTimeInterval.numberOfDays);
-//                NSLog(@"   week from %@ to %@ BZ %@", eventsStatForEventsInTimeInterval.firstDay, eventsStatForEventsInTimeInterval.lastDay, eventsStatForEventsInTimeInterval.bloodSugarWeightedAvg);
-//                NSLog(@"   Anzahl Tagebucheinträge: %lu", (unsigned long) eventsStatForEventsInTimeInterval.numberOfEntries);
-//                NSLog(@"   blood sugar avg (min-max); %@ (%@-%@)", eventsStatForEventsInTimeInterval.bloodSugarAvg, eventsStatForEventsInTimeInterval.bloodSugarMin, eventsStatForEventsInTimeInterval.bloodSugarMax);
-//                NSLog(@"   first day: %@, last day: %@, number of days: %ld", eventsStatForEventsInTimeInterval.firstDay, eventsStatForEventsInTimeInterval.lastDay, (long)eventsStatForEventsInTimeInterval.numberOfDays);
-//                NSLog(@"   chu daily avg: %@ and chuFactor %@", eventsStatForEventsInTimeInterval.chuDailyAvg, eventsStatForEventsInTimeInterval.chuFactorAvg);
-//                NSLog(@"   fpu daily avg: %@ and fpuFactor %@", eventsStatForEventsInTimeInterval.fpuDailyAvg, eventsStatForEventsInTimeInterval.fpuFactorAvg);
-//
-//                NSLog(@"   Durchschnitte von Insulin, Bolus, NPH und Basal): %@ (%@ + %@ + %@ ",eventsStatForEventsInTimeInterval.insulinDailyAvg, eventsStatForEventsInTimeInterval.shortBolusDailyAvg, eventsStatForEventsInTimeInterval.fpuBolusDailyAvg, eventsStatForEventsInTimeInterval.basalDosisDailyAvg);
-//
-//                NSLog(@"   Mittlerer gewichtet Blutzucker und mittlerer Blutzucker: %@ (%@)", eventsStatForEventsInTimeInterval.bloodSugarWeightedAvg, eventsStatForEventsInTimeInterval.bloodSugarAvg);
-//                NSLog(@"   HBA1C: %@", eventsStatForEventsInTimeInterval.hba1c);
-//                NSLog(@"   Nahrungsdurchschn: %@ kcal",eventsStatForEventsInTimeInterval.energyDailyAvg);
 
 
 
@@ -253,5 +384,29 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+
+-(NSDateFormatter *) dateFormatterForDate {
+    if (!_dateFormatterForDate) {
+        _dateFormatterForDate = [[NSDateFormatter alloc] init];  // Initialize Date Formatter
+        _dateFormatterForDate.dateFormat = @"yyyy-MM-dd HH:mm";                          // Specify the date format
+    }
+    return _dateFormatterForDate;
+}
+
+-(NSDateFormatter *) dateFormatterForDateWithWeekDay {
+    if (!_dateFormatterForDateWithWeekDay) {
+        _dateFormatterForDateWithWeekDay = [[NSDateFormatter alloc] init];  // Initialize Date Formatter
+        _dateFormatterForDateWithWeekDay.dateFormat = [NSDateFormatter dateFormatFromTemplate:@"EEE dd.MM.yyyy HH:mm" options:0 locale:[NSLocale currentLocale]];
+    }
+    return _dateFormatterForDateWithWeekDay;
+}
+-(NSDateFormatter *) dateFormatterForShortDate {
+    if (!_dateFormatterForShortDate) {
+        _dateFormatterForShortDate = [[NSDateFormatter alloc] init];
+        _dateFormatterForShortDate.dateFormat = [NSDateFormatter dateFormatFromTemplate:@"dd.MM." options:0 locale:[NSLocale currentLocale]];
+    }
+    return _dateFormatterForShortDate;
+}
 
 @end

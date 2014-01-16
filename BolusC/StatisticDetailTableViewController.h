@@ -10,7 +10,8 @@
 
 @interface StatisticDetailTableViewController : UITableViewController
 
+@property (nonatomic, strong) NSMutableArray *eventsStatInTimeIntervals;      // derived here in viewDidLoad
 @property (nonatomic, strong) NSArray *arrayWithArrayOfEventsInTimeIntervals; // to be handed over by master view controller
-@property (nonatomic, strong) NSMutableArray *eventsStatInTimeIntervals;             // derived here in viewDidLoad
+@property (nonatomic) BOOL groupByTime;                                       // to be handed over by master view controller
 
 @end

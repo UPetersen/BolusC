@@ -18,6 +18,7 @@
 //@property (nonatomic, strong) NSNumber *fpuSum;
 //@property (nonatomic, strong) NSNumber *energySum;
 @property (nonatomic, strong) NSNumber *shortBolusSum;
+@property (nonatomic, strong) NSNumber *correctionBolusSum;
 @property (nonatomic, strong) NSNumber *chuBolusSum;
 @property (nonatomic, strong) NSNumber *fpuBolusSum;
 @property (nonatomic, strong) NSNumber *basalDosisSum;
@@ -45,27 +46,51 @@
     
     self.events = [[NSArray alloc] initWithArray:events];
     
-    
     self.firstDay = [self.events valueForKeyPath:@"@min.timeStamp"];
-    self.lastDay = [self.events valueForKeyPath:@"@max.timeStamp"];
+    self.lastDay  = [self.events valueForKeyPath:@"@max.timeStamp"];
     
     self.bloodSugarMin = [self.events valueForKeyPath:@"@min.bloodSugar"];
     self.bloodSugarMax = [self.events valueForKeyPath:@"@max.bloodSugar"];
     
-    self.shortBolusSum = [self.events valueForKeyPath:@"@sum.shortBolus"];
-    self.chuBolusSum = [self.events valueForKeyPath:@"@sum.chuBolus"];
-    self.fpuBolusSum = [self.events valueForKeyPath:@"@sum.fpuBolus"];
-    self.basalDosisSum = [self.events valueForKeyPath:@"@sum.basalDosis"];
+    self.correctionBolusSum = [self.events valueForKeyPath:@"@sum.correctionBolus"];
+    self.shortBolusSum      = [self.events valueForKeyPath:@"@sum.shortBolus"];
+    self.chuBolusSum        = [self.events valueForKeyPath:@"@sum.chuBolus"];
+    self.fpuBolusSum        = [self.events valueForKeyPath:@"@sum.fpuBolus"];
+    self.basalDosisSum      = [self.events valueForKeyPath:@"@sum.basalDosis"];
     self.insulinSum = [NSNumber numberWithFloat:[self.shortBolusSum floatValue] + [self.fpuBolusSum floatValue] + [self.basalDosisSum floatValue]];
 
     if (self.numberOfDays > 0) {
-        self.shortBolusDailyAvg = [NSNumber numberWithFloat:[self.shortBolusSum floatValue] / (CGFloat)self.numberOfDays];
-        self.chuBolusDailyAvg =   [NSNumber numberWithFloat:[self.chuBolusSum floatValue] / (CGFloat)self.numberOfDays];
-        self.fpuBolusDailyAvg =   [NSNumber numberWithFloat:[self.fpuBolusSum floatValue] / (CGFloat)self.numberOfDays];
-        self.basalDosisDailyAvg = [NSNumber numberWithFloat:[self.basalDosisSum floatValue] / (CGFloat)self.numberOfDays];
-        self.insulinDailyAvg =    [NSNumber numberWithFloat:[self.insulinSum floatValue] / (CGFloat) self.numberOfDays];
+        self.correctionBolusDailyAvg = [NSNumber numberWithFloat:[self.correctionBolusSum floatValue] / (CGFloat)self.numberOfDays];
+        self.shortBolusDailyAvg      = [NSNumber numberWithFloat:[self.shortBolusSum      floatValue] / (CGFloat)self.numberOfDays];
+        self.chuBolusDailyAvg        = [NSNumber numberWithFloat:[self.chuBolusSum        floatValue] / (CGFloat)self.numberOfDays];
+        self.fpuBolusDailyAvg        = [NSNumber numberWithFloat:[self.fpuBolusSum        floatValue] / (CGFloat)self.numberOfDays];
+        self.basalDosisDailyAvg      = [NSNumber numberWithFloat:[self.basalDosisSum      floatValue] / (CGFloat)self.numberOfDays];
+        self.insulinDailyAvg         = [NSNumber numberWithFloat:[self.insulinSum         floatValue] / (CGFloat)self.numberOfDays];
     }
     return self;
+}
+-(NSInteger) numberOfDays {
+    if (!_numberOfDays) {
+        
+        NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+//        [gregorianCalendar setTimeZone:[NSTimeZone localTimeZone]];
+
+        NSDateComponents *components = [gregorianCalendar components:NSDayCalendarUnit
+                                                            fromDate:self.firstDay
+                                                              toDate:self.lastDay
+                                                             options:0];
+        _numberOfDays = [components day]+1;
+        
+//        // Number of days (i.e. number of midnights between the two dates, thus one has to be added)
+//        
+//        if (self.firstDay && self.lastDay) {
+//            NSCalendar *calendar = [NSCalendar currentCalendar];
+//            _numberOfDays = [calendar daysWithinEraFromDate:self.firstDay toDate:self.lastDay];
+//        } else {
+//            _numberOfDays = 0;
+//        }
+    }
+    return _numberOfDays;
 }
 
 -(NSArray *) arrayOfEventsForNumberOfConsecutiveDays: (NSInteger) days {
@@ -73,39 +98,45 @@
 
     NSMutableArray *arrayOfEventArrays = [[NSMutableArray alloc] init];
     
+    // For comparisson get the date for 0:00 hours one day after the last day of the events. I.e. if the last entry in the events was today 13:45 hours, then get tomorrow 0:00 hours.
+    //NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
 
-    NSLog(@"days (first|last): %@ | %@", self.firstDay, self.lastDay);
+    // TODO: prüfen, ob das raus kann.
+//    [calendar setTimeZone:[NSTimeZone localTimeZone]];
+//    [calendar setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+    NSDateComponents *components = [calendar components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:self.lastDay];
+    components.day++; // Add one day
+    NSDate *lastDay = [calendar dateFromComponents:components];  // Next day 0:00 hours
     
 
-    NSTimeInterval timeInterval = -days * 24.0 * 3600.0;  // The time intervall, defining the unit of events to be
-    NSUInteger index = 0;                                 // The index, used for looping throught the array of events
-    NSUInteger indexLastDay = 0;                          // The index on the most recent day of an intervall
-    NSDate *lastDayOfTimeIntervall = self.lastDay;        // The date of the most recent day of an intervall
+    //  create date component with number of days that reflect the intervall of n days, e.g. -7 days for the intervall of seven days
+    NSDateComponents *componentsDays = [[NSDateComponents alloc] init];
+    componentsDays.day = -days;
+    
+    
+//    NSTimeInterval timeInterval = -days * 24.0 * 3600.0;  // The time intervall, defining the unit of events to be
+    NSDate *firstDay; // = [NSDate dateWithTimeInterval:timeInterval sinceDate: lastDay];
 
-    // Loop over all events which shall be combined by units of "days" days from the most recent day to the most former day
-    // the event_array used as input must be sorted from the most recent to the most former day
-
-    for (Event *event in self.events) {
+    // TODO: noch sortieren nach Zeit, absteigend
+    while ([self.firstDay compare: lastDay] == NSOrderedAscending) {
         
-        // Check if the number of days have been passed through or end of events array is reached
-        if ([event.day compare:[NSDate dateWithTimeInterval:timeInterval sinceDate:lastDayOfTimeIntervall]] == NSOrderedAscending
-            || index >= self.events.count-1) {
-            
-            // Range for the set of events
-            NSRange range = NSMakeRange(indexLastDay, index - indexLastDay );
-            
-            // Add this set of events to the result array
-            [arrayOfEventArrays addObject: [self.events subarrayWithRange:range]];
-            
-            // prepare for search of next time intervall
-            indexLastDay = index;
-            lastDayOfTimeIntervall = event.day;
-        }
+        // Get all events between firstDay and lastDay
+//        firstDay = [NSDate dateWithTimeInterval: timeInterval sinceDate: lastDay];
+        firstDay = [calendar dateByAddingComponents:componentsDays toDate:lastDay options:0];
         
-        index++;
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(timeStamp >= %@) AND (timeStamp < %@)", firstDay, lastDay];
+        NSLog(@"firstDayOf.. und lastDayOf.. %@, %@, %ld", firstDay, lastDay, (long) days);
+        
+        // Get all events that lie within that time intervall and store this array in the output array of this method
+        NSArray *eventsInTimeIntervall = [self.events filteredArrayUsingPredicate:predicate];
+        [arrayOfEventArrays addObject:eventsInTimeIntervall];
+        
+        // Prepare for next intervall
+        lastDay = firstDay;
+        
     }
     return arrayOfEventArrays;
-    
 }
 
 -(NSUInteger) numberOfEntries {
@@ -125,8 +156,9 @@
     2.) Nach "http://www.med4you.at/laborbefunde/lbef2/lbef_hba1c.htm":
         Durchschnittlicher Blutzuckerspiegel(in mg/dl) = 28.7 x HbA1c (%) - 46.7
     */
+    NSLog(@"bloodSugarWeightedAvg und bloodSugarMin: %@, %@", self.bloodSugarWeightedAvg, self.bloodSugarMin);
     
-    if (!_hba1c) {
+    if (!_hba1c && ([self.bloodSugarWeightedAvg doubleValue] >= [self.bloodSugarMin doubleValue] && self.bloodSugarWeightedAvg.doubleValue >=1)) {
         _hba1c = [NSNumber numberWithDouble: ([self.bloodSugarWeightedAvg doubleValue] + 86.0) / 33.3 ];
     }
     return _hba1c;
@@ -138,8 +170,12 @@
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bloodSugar > 0"];
         NSArray *eventsWithNonNilBloodSugar = [self.events filteredArrayUsingPredicate:predicate];
 
-        // return nil, if no event found with blood sugar values
         if (!eventsWithNonNilBloodSugar.count) {
+            // return nil, if no event found with blood sugar values
+            return _bloodSugarWeightedAvg;
+        } else if (eventsWithNonNilBloodSugar.count == 1) {
+            // if only one value is given, i.e. there is one event, return the blood sugar value of this event
+            _bloodSugarWeightedAvg = [[eventsWithNonNilBloodSugar objectAtIndex:0] bloodSugar];
             return _bloodSugarWeightedAvg;
         }
         
@@ -150,15 +186,15 @@
         // Loop over all Events (i.e. timeIntervalls)
         double bloodSugarWeightedAvg = 0.0;
         for (NSUInteger i=0; i < eventsWithNonNilBloodSugar.count - 1; i++) {
-            // blood sugar weighted avg = sum of ( 1/2 * (  bloodSugar(i) + bloodSugar(i+1) ) * tDelta ) / sum (tDelta), where tDelta = t(i+1) - t(i)
-//            NSLog(@"event bs and timeStamp: %@, %@", [[eventsWithNonNilBloodSugar objectAtIndex:i] bloodSugar], [[eventsWithNonNilBloodSugar objectAtIndex:i] timeStamp]);
+
             tDelta = [[[eventsWithNonNilBloodSugar objectAtIndex:i+1] timeStamp] timeIntervalSince1970 ]
                    - [[[eventsWithNonNilBloodSugar objectAtIndex:i]   timeStamp] timeIntervalSince1970 ];
-//            NSLog(@"tDelta %f", tDelta);
             
             bloodSugarWeightedAvg += 0.5 * ( [[[eventsWithNonNilBloodSugar objectAtIndex:i]  bloodSugar] doubleValue] +
                                             [[[eventsWithNonNilBloodSugar objectAtIndex:i+1] bloodSugar] doubleValue] ) * (double) tDelta;
         }
+        
+        // Calculation is possible, if there are at least two values and thus one tDelta (the case of two values is handled above)
         if (tOverallDelta !=0) {
             bloodSugarWeightedAvg = bloodSugarWeightedAvg / tOverallDelta;
             _bloodSugarWeightedAvg = [NSNumber numberWithDouble: bloodSugarWeightedAvg ];
@@ -184,19 +220,6 @@
     return _numberOfBloodSugarMeasurementsDailyAvg;
 }
 
--(NSInteger) numberOfDays {
-    if (!_numberOfDays) {
-        // Number of days (i.e. number of midnights between the two dates, thus one has to be added)
-        
-        if (self.firstDay && self.lastDay) {
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            _numberOfDays = [calendar daysWithinEraFromDate:self.firstDay toDate:self.lastDay] + 1;
-        } else {
-            _numberOfDays = 0;
-        }
-    }
-    return _numberOfDays;
-}
 -(NSNumber *) chuDailyAvg {
     if (!_chuDailyAvg) {
         NSNumber *chuSum = [self.events valueForKeyPath:@"@sum.chu"];
@@ -237,12 +260,20 @@
 }
 
 
-//-(NSNumber *) effectiveChuFactorAvg {
-//    if (!_effectiveChuFactorAvg) {
-//         {
-//    }
-//    return _effectiveChuFactorAvg;
-//}
+-(NSNumber *) effectiveChuFactorAvg {
+    if (!_effectiveChuFactorAvg) {
+        if (self.chuDailyAvg) {
+            _effectiveChuFactorAvg = [NSNumber numberWithDouble:[self.shortBolusDailyAvg doubleValue] / [self.chuDailyAvg doubleValue]];
+        }
+    }
+    return _effectiveChuFactorAvg;
+}
+-(NSNumber *) effectiveFpuFactorAvg {
+    if (!_effectiveFpuFactorAvg) {
+        _effectiveFpuFactorAvg = [NSNumber numberWithDouble:[self.fpuBolusDailyAvg doubleValue] / [self.fpuDailyAvg doubleValue]];
+    }
+    return _effectiveFpuFactorAvg;
+}
 
 
 -(NSNumber *) bloodSugarAvg {

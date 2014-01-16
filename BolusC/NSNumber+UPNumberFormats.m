@@ -12,6 +12,7 @@
 //#define VERBOSE
 
 
+NSNumberFormatter *sharedNumberFormatter0MaxDigits = nil;
 NSNumberFormatter *sharedNumberFormatter1MaxDigits = nil;
 NSNumberFormatter *sharedNumberFormatter2MaxDigits = nil;
 
@@ -64,6 +65,24 @@ static NSString *kSharedNumberFormatter2MaxDigits = @"kSharedNumberFormatter2Max
 }
 
 
+-(NSString *)stringWithNumberStyle0maxDigits {
+    if(sharedNumberFormatter0MaxDigits) {
+        return [sharedNumberFormatter0MaxDigits stringForObjectValue:self];
+    }
+    @synchronized(sharedNumberFormatter0MaxDigits) {
+        if (sharedNumberFormatter0MaxDigits == nil) {
+            
+            sharedNumberFormatter0MaxDigits = [NSNumberFormatter new];
+            
+            sharedNumberFormatter0MaxDigits.numberStyle = NSNumberFormatterDecimalStyle;
+            sharedNumberFormatter0MaxDigits.maximumFractionDigits = 0;
+            sharedNumberFormatter0MaxDigits.roundingMode = NSNumberFormatterRoundHalfUp;
+            sharedNumberFormatter0MaxDigits.zeroSymbol = @"0";
+        }
+    }
+    return [sharedNumberFormatter0MaxDigits stringForObjectValue:self];
+}
+
 -(NSString *)stringWithNumberStyle1maxDigits {
     if(sharedNumberFormatter1MaxDigits) {
         return [sharedNumberFormatter1MaxDigits stringForObjectValue:self];
@@ -78,8 +97,8 @@ static NSString *kSharedNumberFormatter2MaxDigits = @"kSharedNumberFormatter2Max
             sharedNumberFormatter1MaxDigits.maximumFractionDigits = 1;
             sharedNumberFormatter1MaxDigits.roundingMode = NSNumberFormatterRoundHalfUp;
             sharedNumberFormatter1MaxDigits.zeroSymbol = @"0";
-//            sharedNumberFormatter1MaxDigits.nilSymbol  = @"";
-//            sharedNumberFormatter1MaxDigits.notANumberSymbol = @"";
+            //            sharedNumberFormatter1MaxDigits.nilSymbol  = @"";
+            //            sharedNumberFormatter1MaxDigits.notANumberSymbol = @"";
         }
     }
     return [sharedNumberFormatter1MaxDigits stringForObjectValue:self];

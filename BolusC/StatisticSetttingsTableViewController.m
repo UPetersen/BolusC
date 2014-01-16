@@ -31,6 +31,7 @@ enum statsDateRangeValues {
 
 @property enum statsDateRangeValues statsDateRange;
 @property (nonatomic, strong) NSArray *eventsStatistics;
+@property (nonatomic) BOOL groupByTime;
 
 @end
 
@@ -47,6 +48,13 @@ enum statsDateRangeValues {
     return self;
 }
 
+//-(BOOL) groupByTime {
+//    if (_groupByTime == nil) {
+//        _groupByTime = YES;
+//    }
+//    return _groupByTime;
+//}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -58,11 +66,29 @@ enum statsDateRangeValues {
     
     self.statsDateRange = noDateRangeSet;
     
+    
+    // Set field where grouping by time is checked (checkmark)
+    self.groupByTime = YES;
+    
+    
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+
+    // set checkmark in section where group by time or group by data is selected
+    if (self.groupByTime == YES) {
+        [[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]] setAccessoryType:UITableViewCellAccessoryCheckmark];
+        [[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:1]] setAccessoryType:UITableViewCellAccessoryNone];
+    } else {
+        [[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:1]] setAccessoryType:UITableViewCellAccessoryCheckmark];
+        [[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]] setAccessoryType:UITableViewCellAccessoryNone];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -77,15 +103,18 @@ enum statsDateRangeValues {
 {
     // Return the number of sections.
 //    NSLog(@"in numberOfSectionsInTableView");
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
 //    NSLog(@"in numberOfRowsInSection in tableview %@", tableView);
+    
     if (section == 0) {
-        return  (NSInteger) 5;
+        return  (NSInteger) 8;
+    } else if (section == 1) {
+        return (NSInteger) 2;
     }
     return 0;
     
@@ -107,15 +136,24 @@ enum statsDateRangeValues {
                 numberOfDays = 1;
                 break;
             case 1:
-                numberOfDays = 7;
+                numberOfDays = 2;
                 break;
             case 2:
-                numberOfDays = 14;
+                numberOfDays = 7;
                 break;
             case 3:
-                numberOfDays = 28;
+                numberOfDays = 14;
                 break;
             case 4:
+                numberOfDays = 28;
+                break;
+            case 5:
+                numberOfDays = 42;
+                break;
+            case 6:
+                numberOfDays = 91;
+                break;
+            case 7:
                 numberOfDays = 182;
                 break;
             default:
@@ -133,6 +171,8 @@ enum statsDateRangeValues {
             
             // Retreive an array with arrays of events for time intervals of n days from the set of statistical data
             NSArray *arrayWithArrayOfEventsInTimeIntervals = [eventsStatForAllEvents arrayOfEventsForNumberOfConsecutiveDays:numberOfDays];
+            
+            
             
             // Loop over the time intervalls
 //            for (NSArray *eventsInTimeInterval in arrayWithArrayOfEventsInTimeIntervals) {
@@ -156,6 +196,7 @@ enum statsDateRangeValues {
 //            }
             
             [segue.destinationViewController setArrayWithArrayOfEventsInTimeIntervals:arrayWithArrayOfEventsInTimeIntervals];
+            [segue.destinationViewController setGroupByTime:self.groupByTime];
         }
 
         
@@ -163,35 +204,68 @@ enum statsDateRangeValues {
 //        [segue.destinationViewController setArrayWithArrayOfEventsInTimeIntervals:arr];            // Property der Klasse Event in DetailViewController setzen
         
     }
-    
-
-    
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    
-    if (cell.accessoryType == UITableViewCellAccessoryNone) {
-        UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.oldIndexPath];
-        if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
-            oldCell.accessoryType = UITableViewCellAccessoryNone;
+
+    // Second group with settings for grouping the data
+    if (indexPath.section == 1) {
+
+        if (indexPath.row == 0) {
+            
+            // first row selected: group by time
+            self.groupByTime = YES;
+            // First row selected: set data property accordingly and set checkmark
+            UITableViewCell *currentCell = [tableView cellForRowAtIndexPath:indexPath];
+            currentCell.accessoryType = UITableViewCellAccessoryCheckmark;
+            
+            // Delete checkmark in the other cell
+            UITableViewCell *otherCell = [tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section]];
+            otherCell.accessoryType = UITableViewCellAccessoryNone;
+            
+        } else if (indexPath.row == 1) {
+            
+            // second row selected: group by data
+            self.groupByTime = NO;
+            // First row selected: set data property accordingly and set checkmark
+            UITableViewCell *currentCell = [tableView cellForRowAtIndexPath:indexPath];
+            currentCell.accessoryType = UITableViewCellAccessoryCheckmark;
+            
+            // Delete checkmark in the other cell
+            UITableViewCell *otherCell = [tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row-1 inSection:indexPath.section]];
+            otherCell.accessoryType = UITableViewCellAccessoryNone;
         }
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+
         
-        self.oldIndexPath = indexPath;
-    } else if(cell.accessoryType == UITableViewCellAccessoryCheckmark){
-        UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.oldIndexPath];
-        if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
-            oldCell.accessoryType = UITableViewCellAccessoryNone;
-        }
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        
-        self.oldIndexPath = indexPath;
-    }//cell acctype
+    }
+    
+    return;
+    
+//    TODO: Das hier ist gut und funktioniert, ggf. wieder nutzen
+//    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+//    
+//    if (cell.accessoryType == UITableViewCellAccessoryNone) {
+//        
+//        UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.oldIndexPath];
+//        if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
+//            oldCell.accessoryType = UITableViewCellAccessoryNone;
+//        }
+//        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+//        
+//        self.oldIndexPath = indexPath;
+//        
+//    } else if (cell.accessoryType == UITableViewCellAccessoryCheckmark){
+//        UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.oldIndexPath];
+//        if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
+//            oldCell.accessoryType = UITableViewCellAccessoryNone;
+//        }
+//        cell.accessoryType = UITableViewCellAccessoryNone;
+//        
+//        self.oldIndexPath = indexPath;
+//    }//cell acctype
 
     
     return;
@@ -231,37 +305,65 @@ enum statsDateRangeValues {
 -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if (section == 0) {
         return [NSString stringWithFormat:@"Betrachtungsintervalle"];
+    } else if (section == 1) {
+        return [NSString stringWithFormat:@"Darstellung"];
     }
     return nil;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Statistic Settings Cell" forIndexPath:indexPath];
-    
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
     // Configure the cell...
-    cell.textLabel.text = @"?? Tage";
-    
-    switch (indexPath.row) {
-        case 0:
-            cell.textLabel.text = @"1 Tage";
-            break;
-        case 1:
-            cell.textLabel.text = @"7 Tage";
-            break;
-        case 2:
-            cell.textLabel.text = @"14 Tage";
-            break;
-        case 3:
-            cell.textLabel.text = @"28 Tage";
-            break;
-        case 4:
-            cell.textLabel.text = @"182 Tage";
-            break;
-        default:
-            break;
-}
-    
+    if (indexPath.section == 0) {
+        
+        cell = [tableView dequeueReusableCellWithIdentifier:@"Statistic Settings Cell" forIndexPath:indexPath];
+
+        switch (indexPath.row) {
+            case 0:
+                cell.textLabel.text = @"1 Tage";
+                break;
+            case 1:
+                cell.textLabel.text = @"2 Tage";
+                break;
+            case 2:
+                cell.textLabel.text = @"7 Tage";
+                break;
+            case 3:
+                cell.textLabel.text = @"14 Tage";
+                break;
+            case 4:
+                cell.textLabel.text = @"28 Tage";
+                break;
+            case 5:
+                cell.textLabel.text = @"42 Tage";
+                break;
+            case 6:
+                cell.textLabel.text = @"91 Tage";
+                break;
+            case 7:
+                cell.textLabel.text = @"182 Tage";
+                break;
+            default:
+                break;
+        }
+        
+        
+    } else if (indexPath.section == 1) {
+        
+        cell = [tableView dequeueReusableCellWithIdentifier:@"Statistic Display Options Cell" forIndexPath:indexPath];
+        
+        switch (indexPath.row) {
+            case 0:
+                cell.textLabel.text = @"Gruppiert nach Zeit";
+                break;
+            case 1:
+                cell.textLabel.text = @"Gruppiert nach Kennwerten";
+                
+            default:
+                break;
+        }
+    }    
     return cell;
 }
 
