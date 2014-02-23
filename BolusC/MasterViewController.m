@@ -627,36 +627,44 @@
             
         case NSFetchedResultsChangeUpdate:                                      // Ändert eine Zeile
 
-            
-            // configureCell:atIndexPath: became somewhat slow with new styling of cells (as of Dec 2013). Thus configureCell:atIndexPath: should only be called when necessary (up till to date it was called, whenever a single value of the event entity was changed in the detail view controller. To avoid this, the property cellAtIntexPathRecentlyChanged stores wether changes to event have been made in the detail view controller. This ist done right here. When changes in the detail view controller are finished and the app switches back to this master view controller, configureCell:atIndexPath: is finally called (which is handled in viewWillAppear)
-//            if (TABLE_VIEW_CELL_STYLE_IS_OLD) {
-//                [self configureCell2:[tableView cellForRowAtIndexPath:indexPath]
-//                         atIndexPath:indexPath];
-//            } else {
-//                [self configureCell:[tableView cellForRowAtIndexPath:indexPath]
-//                         atIndexPath:indexPath];
-//                
-//            }
-            self.cellAtIndexPathRecentlyChanged = [[NSIndexPath alloc] init];
-            self.cellAtIndexPathRecentlyChanged = indexPath;
-
-            // Test: nur ausführen, wenn dieser ViewController auch gerade angezeigt wird, das klappt aber nicht
-//            if (self == self.navigationController.topViewController) {
-            if (TABLE_VIEW_CELL_STYLE==0) {
-                [self configureCell2:[tableView cellForRowAtIndexPath:indexPath]
-                        atIndexPath:indexPath];
-            } else if (TABLE_VIEW_CELL_STYLE == 1){
-                [self configureCell: (TVCell *)[tableView cellForRowAtIndexPath:indexPath]
-                        atIndexPath:indexPath];
-            } else {
-                [self configureCell3: (DiaryTableViewCell *)[tableView cellForRowAtIndexPath:indexPath]
-                        atIndexPath:indexPath];
-            }
-//            }
-            
-            
-            
+            // 2013-02-23: copied the following two lines from a template which works perfectly and avoids an update of the table view cell on each entry of a value in the detail table view controller (and that was a real problem because it was very very time consuming). Wow, this speeded up value entry in the detail view controller very very much. I don't know why I used that confusing code further below anyways.
+//            [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [tableView reloadRowsAtIndexPaths:@[indexPath]
+                             withRowAnimation:UITableViewRowAnimationFade];
             break;
+            
+            // TODO (Written on 2013-02-23 and to be performed on some later date): Delete the following code lines, that are already commented out, from HERE
+//            // configureCell:atIndexPath: became somewhat slow with new styling of cells (as of Dec 2013). Thus configureCell:atIndexPath: should only be called when necessary (up till to date it was called, whenever a single value of the event entity was changed in the detail view controller. To avoid this, the property cellAtIntexPathRecentlyChanged stores wether changes to event have been made in the detail view controller. This ist done right here. When changes in the detail view controller are finished and the app switches back to this master view controller, configureCell:atIndexPath: is finally called (which is handled in viewWillAppear)
+////            if (TABLE_VIEW_CELL_STYLE_IS_OLD) {
+////                [self configureCell2:[tableView cellForRowAtIndexPath:indexPath]
+////                         atIndexPath:indexPath];
+////            } else {
+////                [self configureCell:[tableView cellForRowAtIndexPath:indexPath]
+////                         atIndexPath:indexPath];
+////                
+////            }
+//            self.cellAtIndexPathRecentlyChanged = [[NSIndexPath alloc] init];
+//            self.cellAtIndexPathRecentlyChanged = indexPath;
+//
+//            // Test: nur ausführen, wenn dieser ViewController auch gerade angezeigt wird, das klappt aber nicht
+////            if (self == self.navigationController.topViewController) {
+//            if (TABLE_VIEW_CELL_STYLE==0) {
+//                [self configureCell2:[tableView cellForRowAtIndexPath:indexPath]
+//                        atIndexPath:indexPath];
+//            } else if (TABLE_VIEW_CELL_STYLE == 1){
+//                [self configureCell: (TVCell *)[tableView cellForRowAtIndexPath:indexPath]
+//                        atIndexPath:indexPath];
+//            } else {
+//                [self configureCell3: (DiaryTableViewCell *)[tableView cellForRowAtIndexPath:indexPath]
+//                        atIndexPath:indexPath];
+//            }
+////            }
+//            
+//            
+//            
+//            break;
+            // to HERE
+            
             
         case NSFetchedResultsChangeMove:                                        // Verschiebt eine Zeile
             [tableView deleteRowsAtIndexPaths:@[indexPath]

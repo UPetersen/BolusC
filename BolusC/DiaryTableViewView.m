@@ -47,22 +47,25 @@
 #define BLOOD_SUGAR_BOX_XPOS 10
 #define TIMESTAMP_BOX_XPOS_FROM_RIGHT 10
 
+#define BLOOD_SUGAR_BOX_XPOS_FROM_RIGHT 10
+#define TIMESTAP_BOX_XPOS 10
+
 #define BOX_HEIGHT 50
 #define BOX_OUTSET 2
 
 #define CHU_BOX_XPOS 10
 #define CHU_BOX_WIDTH 70
 
-#define FPU_BOX_XPOS 83 // 160
-#define FPU_BOX_WIDTH 69
-
-#define SHORT_BOLUS_BOX_XPOS 155 // 83
+#define SHORT_BOLUS_BOX_XPOS 83 // 83 /155
 #define SHORT_BOLUS_BOX_WIDTH 72
 
-#define FPU_BOLUS_BOX_XPOS 230
+#define FPU_BOX_XPOS 203 // 83 // 160
+#define FPU_BOX_WIDTH 69
+
+#define FPU_BOLUS_BOX_XPOS 275 // 230
 #define FPU_BOLUS_BOX_WIDTH 42
 
-#define BASAL_BOX_XPOS 275
+#define BASAL_BOX_XPOS 158 // 275
 #define BASAL_BOX_WIDTH 42
 
 #define COMMENT_BOX_XPOS 10
@@ -113,29 +116,33 @@
 
     // Left column: blood sugar and blood sugar unit, e.g. "98 mg/dl"
     if (self.event.bloodSugar) {
-        // Blood sugar, e.g. "84"
-        NSAttributedString *bloodSugarString = [[NSAttributedString alloc] initWithString:[[NSString alloc] initWithFormat:@"%@",self.event.bloodSugar] attributes:self.mainTextAttributes];
-        point = CGPointMake(BLOOD_SUGAR_BOX_XPOS, YPOS_FIRST_ROW);
-        [bloodSugarString drawAtPoint:point];
         
         // Blood Sugar Unit, e.g. "mg/dl"
         NSAttributedString *bloodSugarUnitString = [[NSAttributedString alloc] initWithString:[[NSString alloc] initWithFormat:@" mg/dl"] attributes:self.tertiaryTextAttributes];
-        point =CGPointMake(BLOOD_SUGAR_BOX_XPOS + bloodSugarString.size.width, YPOS_FIRST_ROW + self.yPosDeltaForTertiaryFont);
+        point =CGPointMake(self.bounds.size.width - BLOOD_SUGAR_BOX_XPOS_FROM_RIGHT - bloodSugarUnitString.size.width, YPOS_FIRST_ROW + self.yPosDeltaForTertiaryFont);
         [bloodSugarUnitString drawAtPoint:point];
+
+        // Blood sugar, e.g. "84"
+        NSAttributedString *bloodSugarString = [[NSAttributedString alloc] initWithString:[[NSString alloc] initWithFormat:@"%@",self.event.bloodSugar] attributes:self.mainTextAttributes];
+        point = CGPointMake(self.bounds.size.width - BLOOD_SUGAR_BOX_XPOS_FROM_RIGHT - bloodSugarString.size.width - bloodSugarUnitString.size.width, YPOS_FIRST_ROW);
+        [bloodSugarString drawAtPoint:point];
     }
 
     // Right column: from the right: time label and time label, e.g. "9:28 Uhr"
+
+    // The time itself, e.g. "12:53"
+    NSAttributedString *timeString = [[NSAttributedString alloc] initWithString:[[NSString alloc]initWithFormat:@"%@", [self.dateFormatter stringFromDate:self.event.timeStamp]] attributes:self.mainTextAttributes];
+    point = CGPointMake(TIMESTAP_BOX_XPOS, YPOS_FIRST_ROW);
+    [timeString drawAtPoint:point];
+
     
     // Time label, e.g. "Uhr" (constant could be placed in a separate method with lazy instantiation)
     NSAttributedString *timeStringLabel = [[NSAttributedString alloc] initWithString:[[NSString alloc]initWithFormat:@" Uhr"] attributes:self.tertiaryTextAttributes];
-    point = CGPointMake(self.bounds.size.width - TIMESTAMP_BOX_XPOS_FROM_RIGHT - timeStringLabel.size.width, YPOS_FIRST_ROW + self.yPosDeltaForTertiaryFont);
+//    point = CGPointMake(self.bounds.size.width - TIMESTAMP_BOX_XPOS_FROM_RIGHT - timeStringLabel.size.width, YPOS_FIRST_ROW + self.yPosDeltaForTertiaryFont);
+    point =CGPointMake(TIMESTAP_BOX_XPOS + timeString.size.width, YPOS_FIRST_ROW + self.yPosDeltaForTertiaryFont);
     [timeStringLabel drawAtPoint:point];
     
     
-    // The time itself, e.g. "12:53"
-    NSAttributedString *timeString = [[NSAttributedString alloc] initWithString:[[NSString alloc]initWithFormat:@"%@", [self.dateFormatter stringFromDate:self.event.timeStamp]] attributes:self.mainTextAttributes];
-    point = CGPointMake(self.bounds.size.width - TIMESTAMP_BOX_XPOS_FROM_RIGHT - timeStringLabel.size.width - timeString.size.width, YPOS_FIRST_ROW);
-    [timeString drawAtPoint:point];
     
     
     // ------------------------------------------------------------------------------------------------------------------------------------------
@@ -187,7 +194,7 @@
      yPosDeltaForAppendedValueString:self.yPosDeltaForSecondaryFont
                                width:FPU_BOX_WIDTH height:BOX_HEIGHT boxOutset:BOX_OUTSET color:self.fpuColor];
 
-    [self drawBoxWithLabelString:@"NPH"
+    [self drawBoxWithLabelString:@"NPH-Ins."
                          valueString:[NSString stringWithFormat:@"%@",[self.numberFormatter1Digit stringForObjectValue:self.event.fpuBolus]]
                           unitString:@"IE"
                  appendedValueString:nil

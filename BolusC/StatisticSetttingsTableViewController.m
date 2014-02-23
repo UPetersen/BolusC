@@ -122,6 +122,8 @@ enum statsDateRangeValues {
 //-(void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
 //    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Statistic Settings Cell" forIndexPath:indexPath];
 //}
+
+
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
     NSLog(@"segue itentifier is %@", segue.identifier);
@@ -160,7 +162,11 @@ enum statsDateRangeValues {
                 break;
         }
         
-        
+        // Save the context before fetching data from the database and delete the last fetch result, in order to the data beeing refetched and thus actual
+        [self saveContext:self.managedObjectContext];
+        self.fetchedResultsController = nil;  // delete the last fetch to ensure refetch and always have the most current data
+
+        // now get the fetched data (and thus refetch)
         if (self.fetchedResultsController.fetchedObjects) {
             
             // This is an array with all events in the database that were fetched (all events so far, can be limited some later date)
@@ -171,38 +177,10 @@ enum statsDateRangeValues {
             
             // Retreive an array with arrays of events for time intervals of n days from the set of statistical data
             NSArray *arrayWithArrayOfEventsInTimeIntervals = [eventsStatForAllEvents arrayOfEventsForNumberOfConsecutiveDays:numberOfDays];
-            
-            
-            
-            // Loop over the time intervalls
-//            for (NSArray *eventsInTimeInterval in arrayWithArrayOfEventsInTimeIntervals) {
-//                
-//                EventsStatistic *eventsStatForEventsInTimeInterval = [[EventsStatistic alloc] initWithArrayOfEvents:eventsInTimeInterval];
-//                
-//                NSLog(@"   Stats for the week from %@ to %@", eventsStatForEventsInTimeInterval.firstDay, eventsStatForEventsInTimeInterval.lastDay);
-//                NSLog(@"   number of days: %lu", (unsigned long) eventsStatForEventsInTimeInterval.numberOfDays);
-//                NSLog(@"   week from %@ to %@ BZ %@", eventsStatForEventsInTimeInterval.firstDay, eventsStatForEventsInTimeInterval.lastDay, eventsStatForEventsInTimeInterval.bloodSugarWeightedAvg);
-//                NSLog(@"   Anzahl Tagebucheinträge: %lu", (unsigned long) eventsStatForEventsInTimeInterval.numberOfEntries);
-//                NSLog(@"   blood sugar avg (min-max); %@ (%@-%@)", eventsStatForEventsInTimeInterval.bloodSugarAvg, eventsStatForEventsInTimeInterval.bloodSugarMin, eventsStatForEventsInTimeInterval.bloodSugarMax);
-//                NSLog(@"   first day: %@, last day: %@, number of days: %ld", eventsStatForEventsInTimeInterval.firstDay, eventsStatForEventsInTimeInterval.lastDay, (long)eventsStatForEventsInTimeInterval.numberOfDays);
-//                NSLog(@"   chu daily avg: %@ and chuFactor %@", eventsStatForEventsInTimeInterval.chuDailyAvg, eventsStatForEventsInTimeInterval.chuFactorAvg);
-//                NSLog(@"   fpu daily avg: %@ and fpuFactor %@", eventsStatForEventsInTimeInterval.fpuDailyAvg, eventsStatForEventsInTimeInterval.fpuFactorAvg);
-//                
-//                NSLog(@"   Durchschnitte von Insulin, Bolus, NPH und Basal): %@ (%@ + %@ + %@ ",eventsStatForEventsInTimeInterval.insulinDailyAvg, eventsStatForEventsInTimeInterval.shortBolusDailyAvg, eventsStatForEventsInTimeInterval.fpuBolusDailyAvg, eventsStatForEventsInTimeInterval.basalDosisDailyAvg);
-//                
-//                NSLog(@"   Mittlerer gewichtet Blutzucker und mittlerer Blutzucker: %@ (%@)", eventsStatForEventsInTimeInterval.bloodSugarWeightedAvg, eventsStatForEventsInTimeInterval.bloodSugarAvg);
-//                NSLog(@"   HBA1C: %@", eventsStatForEventsInTimeInterval.hba1c);
-//                NSLog(@"   Nahrungsdurchschn: %@ kcal",eventsStatForEventsInTimeInterval.energyDailyAvg);
-//            }
-            
+                        
             [segue.destinationViewController setArrayWithArrayOfEventsInTimeIntervals:arrayWithArrayOfEventsInTimeIntervals];
             [segue.destinationViewController setGroupByTime:self.groupByTime];
         }
-
-        
-        
-//        [segue.destinationViewController setArrayWithArrayOfEventsInTimeIntervals:arr];            // Property der Klasse Event in DetailViewController setzen
-        
     }
 }
 
@@ -420,9 +398,9 @@ enum statsDateRangeValues {
 */
 
 
-
 - (NSFetchedResultsController *)fetchedResultsController
 {
+    // Auskommentiert, damit jedesmal der komplette fetch gemacht wird
     if (_fetchedResultsController != nil) {
         return _fetchedResultsController;    // Wenn dies schon mal durchlaufen wurde, ist nichts mehr zu tun.
     }
@@ -481,6 +459,20 @@ enum statsDateRangeValues {
     return _fetchedResultsController;
 }
 
+
+# pragma mark -- Sachen zu Core Data aus AppDelegate
+
+
+-(void) saveContext:(NSManagedObjectContext *)context {
+    // Save the context.
+    NSError *error = nil;
+    if (![context save:&error]) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+}
 
 
 

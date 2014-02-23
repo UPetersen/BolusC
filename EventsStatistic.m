@@ -52,23 +52,132 @@
     self.bloodSugarMin = [self.events valueForKeyPath:@"@min.bloodSugar"];
     self.bloodSugarMax = [self.events valueForKeyPath:@"@max.bloodSugar"];
     
-    self.correctionBolusSum = [self.events valueForKeyPath:@"@sum.correctionBolus"];
-    self.shortBolusSum      = [self.events valueForKeyPath:@"@sum.shortBolus"];
-    self.chuBolusSum        = [self.events valueForKeyPath:@"@sum.chuBolus"];
-    self.fpuBolusSum        = [self.events valueForKeyPath:@"@sum.fpuBolus"];
-    self.basalDosisSum      = [self.events valueForKeyPath:@"@sum.basalDosis"];
-    self.insulinSum = [NSNumber numberWithFloat:[self.shortBolusSum floatValue] + [self.fpuBolusSum floatValue] + [self.basalDosisSum floatValue]];
+//    self.correctionBolusSum = [self.events valueForKeyPath:@"@sum.correctionBolus"];
+//    self.shortBolusSum      = [self.events valueForKeyPath:@"@sum.shortBolus"];
+//    self.chuBolusSum        = [self.events valueForKeyPath:@"@sum.chuBolus"];
+//    self.fpuBolusSum        = [self.events valueForKeyPath:@"@sum.fpuBolus"];
+//    self.basalDosisSum      = [self.events valueForKeyPath:@"@sum.basalDosis"];
+//    self.insulinSum = [NSNumber numberWithFloat:[self.shortBolusSum floatValue] + [self.fpuBolusSum floatValue] + [self.basalDosisSum floatValue]];
 
-    if (self.numberOfDays > 0) {
-        self.correctionBolusDailyAvg = [NSNumber numberWithFloat:[self.correctionBolusSum floatValue] / (CGFloat)self.numberOfDays];
-        self.shortBolusDailyAvg      = [NSNumber numberWithFloat:[self.shortBolusSum      floatValue] / (CGFloat)self.numberOfDays];
-        self.chuBolusDailyAvg        = [NSNumber numberWithFloat:[self.chuBolusSum        floatValue] / (CGFloat)self.numberOfDays];
-        self.fpuBolusDailyAvg        = [NSNumber numberWithFloat:[self.fpuBolusSum        floatValue] / (CGFloat)self.numberOfDays];
-        self.basalDosisDailyAvg      = [NSNumber numberWithFloat:[self.basalDosisSum      floatValue] / (CGFloat)self.numberOfDays];
-        self.insulinDailyAvg         = [NSNumber numberWithFloat:[self.insulinSum         floatValue] / (CGFloat)self.numberOfDays];
-    }
+//    if (self.numberOfDays > 0) {
+//        self.correctionBolusDailyAvg = [NSNumber numberWithFloat:[self.correctionBolusSum floatValue] / (CGFloat)self.numberOfDays];
+//        self.shortBolusDailyAvg      = [NSNumber numberWithFloat:[self.shortBolusSum      floatValue] / (CGFloat)self.numberOfDays];
+//        self.chuBolusDailyAvg        = [NSNumber numberWithFloat:[self.chuBolusSum        floatValue] / (CGFloat)self.numberOfDays];
+//        self.fpuBolusDailyAvg        = [NSNumber numberWithFloat:[self.fpuBolusSum        floatValue] / (CGFloat)self.numberOfDays];
+//        self.basalDosisDailyAvg      = [NSNumber numberWithFloat:[self.basalDosisSum      floatValue] / (CGFloat)self.numberOfDays];
+//        self.insulinDailyAvg         = [NSNumber numberWithFloat:[self.insulinSum         floatValue] / (CGFloat)self.numberOfDays];
+//    }
+
     return self;
 }
+-(NSNumber *) insulinDailyAvg {
+    if (!_insulinDailyAvg && self.numberOfDays > 0) {
+        _insulinDailyAvg = [NSNumber numberWithFloat: ([self.shortBolusSum floatValue] + [self.fpuBolusSum floatValue] + [self.basalDosisSum floatValue]) / (CGFloat) self.numberOfDays];
+    }
+    return _insulinDailyAvg;
+}
+
+-(NSNumber *) shortBolusSum {
+    if (!_shortBolusSum) {
+        _shortBolusSum = [self.events valueForKeyPath:@"@sum.shortBolus"];
+    }
+    return _shortBolusSum;
+}
+-(NSNumber *) shortBolusDailyAvg {
+    if (!_shortBolusDailyAvg) {
+        if (self.numberOfDays > 0) {
+            _shortBolusDailyAvg = [NSNumber numberWithFloat: self.shortBolusSum.floatValue / (CGFloat) self.numberOfDays];
+        }
+    }
+    return _shortBolusDailyAvg;
+}
+
+-(NSNumber *) chuBolusSum {
+    if (!_chuBolusSum) {
+        _chuBolusSum = [self.events valueForKeyPath:@"@sum.chuBolus"];
+    }
+    return _chuBolusSum;
+}
+-(NSNumber *) chuBolusDailyAvg {
+    if (!_chuBolusDailyAvg) {
+        if (self.numberOfDays > 0) {
+            _chuBolusDailyAvg = [NSNumber numberWithFloat: self.chuBolusSum.floatValue / (CGFloat) self.numberOfDays];
+        }
+    }
+    return _chuBolusDailyAvg;
+}
+
+-(NSNumber *) basalDosisSum {
+    if (!_basalDosisSum) {
+        _basalDosisSum = [self.events valueForKeyPath:@"@sum.basalDosis"];
+    }
+    return _basalDosisSum;
+}
+-(NSNumber *) basalDosisDailyAvg {
+    if (!_basalDosisDailyAvg) {
+        if (self.numberOfDays > 0) {
+            _basalDosisDailyAvg = [NSNumber numberWithFloat: self.basalDosisSum.floatValue / (CGFloat) self.numberOfDays];
+        }
+    }
+    return _basalDosisDailyAvg;
+}
+
+-(NSNumber *) fpuBolusSum {
+    if (!_fpuBolusSum) {
+        _fpuBolusSum = [self.events valueForKeyPath:@"@sum.fpuBolus"];
+    }
+    return _fpuBolusSum;
+}
+-(NSNumber *) fpuBolusDailyAvg {
+    if (!_fpuBolusDailyAvg) {
+        if (self.numberOfDays > 0) {
+            _fpuBolusDailyAvg = [NSNumber numberWithFloat: self.fpuBolusSum.floatValue / (CGFloat) self.numberOfDays];
+        }
+    }
+    return _fpuBolusDailyAvg;
+}
+
+-(NSNumber *) correctionBolusDailyAvg {
+    if (!_correctionBolusDailyAvg) {
+        NSNumber *sum = [self.events valueForKeyPath:@"@sum.correctionBolus"];
+        if (self.numberOfDays > 0) {
+            _correctionBolusDailyAvg = [NSNumber numberWithFloat: sum.floatValue / (CGFloat) self.numberOfDays];
+        }
+    }
+    return _correctionBolusDailyAvg;
+}
+-(NSNumber *) positiveCorrectionBolusDailyAvg {
+    if (!_positiveCorrectionBolusDailyAvg) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"correctionBolus > 0"];
+        NSArray *eventsWithNonNilValues = [self.events filteredArrayUsingPredicate:predicate];
+        NSNumber *sum = [eventsWithNonNilValues valueForKeyPath:@"@sum.correctionBolus"];
+        if (self.numberOfDays > 0) {
+            _positiveCorrectionBolusDailyAvg = [NSNumber numberWithFloat:sum.floatValue / (CGFloat) self.numberOfDays];
+        }
+    }
+    return _positiveCorrectionBolusDailyAvg;
+}
+-(NSNumber *) negativeCorrectionBolusDailyAvg {
+    if (!_negativeCorrectionBolusDailyAvg) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"correctionBolus < 0"];
+        NSArray *eventsWithNonNilValues = [self.events filteredArrayUsingPredicate:predicate];
+        NSNumber *sum = [eventsWithNonNilValues valueForKeyPath:@"@sum.correctionBolus"];
+        if (self.numberOfDays > 0) {
+            _negativeCorrectionBolusDailyAvg = [NSNumber numberWithFloat:sum.floatValue / (CGFloat) self.numberOfDays];
+        }
+    }
+    return _negativeCorrectionBolusDailyAvg;
+}
+
+-(NSNumber *) daysWithCommentsContainingSport {
+    if (!_daysWithCommentsContainingSport) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"comment contains[c] 'Sport'"]; // [c] for case insensitive search
+        NSArray *eventsWithNonNilValues = [self.events filteredArrayUsingPredicate:predicate];
+        _daysWithCommentsContainingSport = [NSNumber numberWithInteger:eventsWithNonNilValues.count];
+    }
+    return _daysWithCommentsContainingSport;
+}
+
 -(NSInteger) numberOfDays {
     if (!_numberOfDays) {
         
@@ -81,15 +190,7 @@
                                                              options:0];
         _numberOfDays = [components day]+1;
         
-//        // Number of days (i.e. number of midnights between the two dates, thus one has to be added)
-//        
-//        if (self.firstDay && self.lastDay) {
-//            NSCalendar *calendar = [NSCalendar currentCalendar];
-//            _numberOfDays = [calendar daysWithinEraFromDate:self.firstDay toDate:self.lastDay];
-//        } else {
-//            _numberOfDays = 0;
-//        }
-    }
+   }
     return _numberOfDays;
 }
 
@@ -203,7 +304,6 @@
     return _bloodSugarWeightedAvg;
 }
 
-
 -(NSInteger) bloodSugarMeasurementsCount {
 
     if (!_bloodSugarMeasurementsCount) {
@@ -220,15 +320,47 @@
     return _numberOfBloodSugarMeasurementsDailyAvg;
 }
 
+-(NSNumber *) numberOfInjectionsPerDay {
+    if (!_numberOfInjectionsPerDay) {
+        _numberOfInjectionsPerDay = [NSNumber numberWithFloat: self.numberOfShortBolusInjectionsPerDay.floatValue + self.numberOfFpuBolusInjectionsPerDay.floatValue + self.numberOfBasalDosisInjectionsPerDay.floatValue];
+    }
+    return _numberOfInjectionsPerDay;
+}
+
+-(NSNumber *) numberOfBasalDosisInjectionsPerDay {
+    if (!_numberOfBasalDosisInjectionsPerDay) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"basalDosis > 0"];
+        NSArray *eventsWithNonNilValues = [self.events filteredArrayUsingPredicate:predicate];
+        _numberOfBasalDosisInjectionsPerDay = [NSNumber numberWithFloat: (CGFloat) eventsWithNonNilValues.count / (CGFloat) self.numberOfDays];
+    }
+    return _numberOfBasalDosisInjectionsPerDay;
+}
+-(NSNumber *) numberOfFpuBolusInjectionsPerDay {
+    if (!_numberOfFpuBolusInjectionsPerDay) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fpuBolus > 0"];
+        NSArray *eventsWithNonNilValues = [self.events filteredArrayUsingPredicate:predicate];
+        _numberOfFpuBolusInjectionsPerDay = [NSNumber numberWithFloat: (CGFloat) eventsWithNonNilValues.count / (CGFloat) self.numberOfDays];
+    }
+    return _numberOfFpuBolusInjectionsPerDay;
+}
+-(NSNumber *) numberOfShortBolusInjectionsPerDay {
+    if (!_numberOfShortBolusInjectionsPerDay) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"shortBolus > 0"];
+        NSArray *eventsWithNonNilValues = [self.events filteredArrayUsingPredicate:predicate];
+        _numberOfShortBolusInjectionsPerDay = [NSNumber numberWithFloat: (CGFloat) eventsWithNonNilValues.count / (CGFloat) self.numberOfDays];
+    }
+    return _numberOfShortBolusInjectionsPerDay;
+}
+
 -(NSNumber *) chuDailyAvg {
-    if (!_chuDailyAvg) {
+    if (!_chuDailyAvg && self.numberOfDays > 0) {
         NSNumber *chuSum = [self.events valueForKeyPath:@"@sum.chu"];
         _chuDailyAvg = [NSNumber numberWithFloat:[chuSum floatValue]/ (CGFloat) self.numberOfDays];
     }
     return _chuDailyAvg;
 }
 -(NSNumber *) fpuDailyAvg {
-    if (!_fpuDailyAvg) {
+    if (!_fpuDailyAvg && self.numberOfDays > 0) {
         NSNumber *fpuSum = [self.events valueForKeyPath:@"@sum.fpu"];
         _fpuDailyAvg = [NSNumber numberWithFloat:[fpuSum floatValue]/ (CGFloat) self.numberOfDays];
     }
@@ -253,10 +385,31 @@
 }
 -(NSNumber *) energyDailyAvg {
     if (!_energyDailyAvg) {
-        NSNumber *energySum = [self.events valueForKeyPath:@"@sum.energy"];
-        _energyDailyAvg = [NSNumber numberWithFloat:[energySum floatValue]/ (CGFloat) self.numberOfDays];
+        NSNumber *sum = [self.events valueForKeyPath:@"@sum.energy"];
+        _energyDailyAvg = [NSNumber numberWithFloat:[sum floatValue] / (CGFloat) self.numberOfDays];
     }
     return _energyDailyAvg;
+}
+-(NSNumber *) carbsPerDay {
+    if (!_carbsPerDay) {
+        NSNumber *sum = [self.events valueForKeyPath:@"@sum.carb"];
+        _carbsPerDay = [NSNumber numberWithFloat:[sum floatValue] / (CGFloat) self.numberOfDays];
+    }
+    return _carbsPerDay;
+}
+-(NSNumber *) fatPerDay {
+    if (!_fatPerDay) {
+        NSNumber *sum = [self.events valueForKeyPath:@"@sum.fat"];
+        _fatPerDay = [NSNumber numberWithFloat:[sum floatValue] / (CGFloat) self.numberOfDays];
+    }
+    return _fatPerDay;
+}
+-(NSNumber *) proteinPerDay {
+    if (!_proteinPerDay) {
+        NSNumber *sum = [self.events valueForKeyPath:@"@sum.protein"];
+        _proteinPerDay = [NSNumber numberWithFloat:[sum floatValue] / (CGFloat) self.numberOfDays];
+    }
+    return _proteinPerDay;
 }
 
 

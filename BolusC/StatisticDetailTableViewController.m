@@ -80,7 +80,7 @@
     // Return the number of rows in the section.
 //    NSLog(@"number of rows in section no %ld: %lu", (long) section, (unsigned long)[[self.arrayWithArrayOfEventsInTimeIntervals objectAtIndex:section ] count]);
     if (self.groupByTime == YES) {
-        return 15;
+        return 20;
     } else {
         return self.eventsStatInTimeIntervals.count;
     }
@@ -166,6 +166,7 @@
     if (self.groupByTime == YES) {
 
         EventsStatistic *eventsStatForEventsInTimeInterval = [self.eventsStatInTimeIntervals objectAtIndex:indexPath.section];
+        CGFloat sum = 0.0;
         switch (indexPath.row) {
             case 0:
                 cell.textLabel.text = @"Blutzucker";
@@ -213,9 +214,11 @@
                 break;
             case 8:
                 cell.textLabel.text = @"Bolusinsulin";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@ Korr.) IE",
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ IE, inkl. %@ Korr. (+%@/%@)",
                                              [eventsStatForEventsInTimeInterval.shortBolusDailyAvg stringWithNumberStyle1maxDigits],
-                                             [eventsStatForEventsInTimeInterval.correctionBolusDailyAvg stringWithNumberStyle2maxDigits]];
+                                             [eventsStatForEventsInTimeInterval.correctionBolusDailyAvg stringWithNumberStyle2maxDigits],
+                                             [eventsStatForEventsInTimeInterval.positiveCorrectionBolusDailyAvg stringWithNumberStyle2maxDigits],
+                                             [eventsStatForEventsInTimeInterval.negativeCorrectionBolusDailyAvg stringWithNumberStyle2maxDigits]];
                 break;
             case 9:
                 cell.textLabel.text = @"NPH-Insulin";
@@ -245,6 +248,48 @@
                 cell.textLabel.text = @"Einträge";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld",
                                              (long) eventsStatForEventsInTimeInterval.numberOfEntries];
+                break;
+            case 15:
+                cell.textLabel.text = @"Injektionen";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@/%@/%@) pro Tag Boli/NPH/Basal",
+                                             [eventsStatForEventsInTimeInterval.numberOfInjectionsPerDay stringWithNumberStyle1maxDigits],
+                                             [eventsStatForEventsInTimeInterval.numberOfShortBolusInjectionsPerDay stringWithNumberStyle1maxDigits],
+                                             [eventsStatForEventsInTimeInterval.numberOfFpuBolusInjectionsPerDay stringWithNumberStyle1maxDigits],
+                                             [eventsStatForEventsInTimeInterval.numberOfBasalDosisInjectionsPerDay stringWithNumberStyle1maxDigits]];
+                break;
+            case 16:
+                cell.textLabel.text = @"Nährwerte";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@/%@/%@ g pro Tag KH/Eiweiß/Fett",
+                                             [eventsStatForEventsInTimeInterval.carbsPerDay stringWithNumberStyle0maxDigits],
+                                             [eventsStatForEventsInTimeInterval.proteinPerDay stringWithNumberStyle0maxDigits],
+                                             [eventsStatForEventsInTimeInterval.fatPerDay stringWithNumberStyle0maxDigits]];
+                break;
+            case 17:
+                cell.textLabel.text = @"Nährwerte";
+                sum = eventsStatForEventsInTimeInterval.carbsPerDay.floatValue + eventsStatForEventsInTimeInterval.proteinPerDay.floatValue + eventsStatForEventsInTimeInterval.fatPerDay.floatValue;
+                if (sum > 0) {
+                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@/%@/%@ Gewichts-%%  KH/Eiweiß/Fett (%@ g insgesamt)",
+                                                 [[NSNumber numberWithFloat: eventsStatForEventsInTimeInterval.carbsPerDay.floatValue   * 100.0 / sum] stringWithNumberStyle0maxDigits],
+                                                 [[NSNumber numberWithFloat: eventsStatForEventsInTimeInterval.proteinPerDay.floatValue * 100.0 / sum] stringWithNumberStyle0maxDigits],
+                                                 [[NSNumber numberWithFloat: eventsStatForEventsInTimeInterval.fatPerDay.floatValue     * 100.0 / sum] stringWithNumberStyle0maxDigits],
+                                                 [[NSNumber numberWithFloat:sum] stringWithNumberStyle0maxDigits]];
+                }
+                break;
+            case 18:
+                cell.textLabel.text = @"Nährwerte";
+                sum = 4.0 * eventsStatForEventsInTimeInterval.carbsPerDay.floatValue + 4.0 * eventsStatForEventsInTimeInterval.proteinPerDay.floatValue + 9.0 * eventsStatForEventsInTimeInterval.fatPerDay.floatValue;
+                if (sum > 0) {
+                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@/%@/%@ Energie-%%  KH/Eiweiß/Fett (%@ kcal insgesamt)",
+                                                 [[NSNumber numberWithFloat: eventsStatForEventsInTimeInterval.carbsPerDay.floatValue   * 400.0 / sum] stringWithNumberStyle0maxDigits],
+                                                 [[NSNumber numberWithFloat: eventsStatForEventsInTimeInterval.proteinPerDay.floatValue * 400.0 / sum] stringWithNumberStyle0maxDigits],
+                                                 [[NSNumber numberWithFloat: eventsStatForEventsInTimeInterval.fatPerDay.floatValue     * 900.0 / sum] stringWithNumberStyle0maxDigits],
+                                                 [[NSNumber numberWithFloat:sum] stringWithNumberStyle0maxDigits]];
+                }
+                break;
+            case 19:
+                // Verallgemeinern zu Tagen, an denen der Kommentar den String 'text' enthält
+                cell.textLabel.text = @"Sporttage";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", eventsStatForEventsInTimeInterval.daysWithCommentsContainingSport];
                 break;
                 
             default:
