@@ -313,11 +313,11 @@
     }
     return _bloodSugarMeasurementsCount;
 }
--(NSNumber *) numberOfBloodSugarMeasurementsDailyAvg {
-    if (!_numberOfBloodSugarMeasurementsDailyAvg && self.numberOfDays >= 1) {
-        _numberOfBloodSugarMeasurementsDailyAvg = [NSNumber numberWithFloat:(CGFloat) self.bloodSugarMeasurementsCount / (CGFloat) self.numberOfDays];
+-(NSNumber *) numberOfBloodSugarMeasurementsPerDay {
+    if (!_numberOfBloodSugarMeasurementsPerDay && self.numberOfDays >= 1) {
+        _numberOfBloodSugarMeasurementsPerDay = [NSNumber numberWithFloat:(CGFloat) self.bloodSugarMeasurementsCount / (CGFloat) self.numberOfDays];
     }
-    return _numberOfBloodSugarMeasurementsDailyAvg;
+    return _numberOfBloodSugarMeasurementsPerDay;
 }
 
 -(NSNumber *) numberOfInjectionsPerDay {
@@ -325,6 +325,13 @@
         _numberOfInjectionsPerDay = [NSNumber numberWithFloat: self.numberOfShortBolusInjectionsPerDay.floatValue + self.numberOfFpuBolusInjectionsPerDay.floatValue + self.numberOfBasalDosisInjectionsPerDay.floatValue];
     }
     return _numberOfInjectionsPerDay;
+}
+
+-(NSNumber *) numberOfEntriesPerDay {
+    if (!_numberOfEntriesPerDay) {
+        _numberOfEntriesPerDay = [NSNumber numberWithFloat: (CGFloat) self.numberOfEntries / (CGFloat) self.numberOfDays];
+    }
+    return _numberOfEntriesPerDay;
 }
 
 -(NSNumber *) numberOfBasalDosisInjectionsPerDay {

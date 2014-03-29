@@ -80,7 +80,7 @@
     // Return the number of rows in the section.
 //    NSLog(@"number of rows in section no %ld: %lu", (long) section, (unsigned long)[[self.arrayWithArrayOfEventsInTimeIntervals objectAtIndex:section ] count]);
     if (self.groupByTime == YES) {
-        return 20;
+        return 21;
     } else {
         return self.eventsStatInTimeIntervals.count;
     }
@@ -246,25 +246,32 @@
                 break;
             case 14:
                 cell.textLabel.text = @"Einträge";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld",
-                                             (long) eventsStatForEventsInTimeInterval.numberOfEntries];
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld (%@ pro Tag)",
+                                             (long) eventsStatForEventsInTimeInterval.numberOfEntries,
+                                             [eventsStatForEventsInTimeInterval.numberOfEntriesPerDay stringWithNumberStyle1maxDigits]];
                 break;
             case 15:
-                cell.textLabel.text = @"Injektionen";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@/%@/%@) pro Tag Boli/NPH/Basal",
+                cell.textLabel.text = @"Messungen";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ pro Tag",
+                                            [eventsStatForEventsInTimeInterval.numberOfBloodSugarMeasurementsPerDay stringWithNumberStyle1maxDigits]];
+                break;
+                
+            case 16:
+                cell.textLabel.text = @"Insulingaben";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ pro Tag (%@/%@/%@) Boli/NPH/Basal",
                                              [eventsStatForEventsInTimeInterval.numberOfInjectionsPerDay stringWithNumberStyle1maxDigits],
                                              [eventsStatForEventsInTimeInterval.numberOfShortBolusInjectionsPerDay stringWithNumberStyle1maxDigits],
                                              [eventsStatForEventsInTimeInterval.numberOfFpuBolusInjectionsPerDay stringWithNumberStyle1maxDigits],
                                              [eventsStatForEventsInTimeInterval.numberOfBasalDosisInjectionsPerDay stringWithNumberStyle1maxDigits]];
                 break;
-            case 16:
+            case 17:
                 cell.textLabel.text = @"Nährwerte";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%@/%@/%@ g pro Tag KH/Eiweiß/Fett",
                                              [eventsStatForEventsInTimeInterval.carbsPerDay stringWithNumberStyle0maxDigits],
                                              [eventsStatForEventsInTimeInterval.proteinPerDay stringWithNumberStyle0maxDigits],
                                              [eventsStatForEventsInTimeInterval.fatPerDay stringWithNumberStyle0maxDigits]];
                 break;
-            case 17:
+            case 18:
                 cell.textLabel.text = @"Nährwerte";
                 sum = eventsStatForEventsInTimeInterval.carbsPerDay.floatValue + eventsStatForEventsInTimeInterval.proteinPerDay.floatValue + eventsStatForEventsInTimeInterval.fatPerDay.floatValue;
                 if (sum > 0) {
@@ -275,7 +282,7 @@
                                                  [[NSNumber numberWithFloat:sum] stringWithNumberStyle0maxDigits]];
                 }
                 break;
-            case 18:
+            case 19:
                 cell.textLabel.text = @"Nährwerte";
                 sum = 4.0 * eventsStatForEventsInTimeInterval.carbsPerDay.floatValue + 4.0 * eventsStatForEventsInTimeInterval.proteinPerDay.floatValue + 9.0 * eventsStatForEventsInTimeInterval.fatPerDay.floatValue;
                 if (sum > 0) {
@@ -286,7 +293,7 @@
                                                  [[NSNumber numberWithFloat:sum] stringWithNumberStyle0maxDigits]];
                 }
                 break;
-            case 19:
+            case 20:
                 // Verallgemeinern zu Tagen, an denen der Kommentar den String 'text' enthält
                 cell.textLabel.text = @"Sporttage";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", eventsStatForEventsInTimeInterval.daysWithCommentsContainingSport];

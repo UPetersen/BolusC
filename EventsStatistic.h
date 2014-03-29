@@ -37,6 +37,8 @@
 @property (nonatomic, strong) NSNumber *fpuBolusDailyAvg;
 @property (nonatomic, strong) NSNumber *basalDosisDailyAvg;
 
+@property (nonatomic, strong) NSNumber *numberOfEntriesPerDay;
+@property (nonatomic, strong) NSNumber *numberOfBloodSugarMeasurementsPerDay;
 @property (nonatomic, strong) NSNumber *numberOfInjectionsPerDay;
 @property (nonatomic, strong) NSNumber *numberOfShortBolusInjectionsPerDay;
 @property (nonatomic, strong) NSNumber *numberOfFpuBolusInjectionsPerDay;
@@ -46,7 +48,6 @@
 @property (nonatomic, strong) NSNumber *proteinPerDay;
 
 @property (nonatomic, strong) NSNumber *energyDailyAvg;
-@property (nonatomic, strong) NSNumber *numberOfBloodSugarMeasurementsDailyAvg;
 @property (nonatomic, strong) NSNumber *weightAvg;
 
 @property (nonatomic, strong) NSNumber *daysWithCommentsContainingSport;
