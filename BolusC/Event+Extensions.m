@@ -272,7 +272,7 @@
 {
     NSCalendar *calendar = [NSCalendar currentCalendar];
     
-    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.timeStamp];
+    NSDateComponents *components = [calendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:self.timeStamp];
     NSInteger hour = [components hour];
     NSInteger minute = [components minute];
     return [NSNumber numberWithFloat:(CGFloat) (hour + ((CGFloat) minute )/ 60.0)];
@@ -286,14 +286,14 @@
 -(NSInteger) yearForWeekOfYear {
     
     NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSDateComponents *components = [calendar components:NSYearForWeekOfYearCalendarUnit fromDate:self.timeStamp];
+    NSDateComponents *components = [calendar components:NSCalendarUnitYearForWeekOfYear fromDate:self.timeStamp];
     
     return [components yearForWeekOfYear];
 }
 -(NSInteger) weekOfYear {
     
     NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSDateComponents *components = [calendar components:NSWeekOfYearCalendarUnit fromDate:self.timeStamp];
+    NSDateComponents *components = [calendar components:NSCalendarUnitWeekOfYear fromDate:self.timeStamp];
     
     return [components weekOfYear];
 }
@@ -302,7 +302,7 @@
     
     NSCalendar *calendar = [NSCalendar currentCalendar];
     
-    NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit) fromDate:self.timeStamp];
+    NSDateComponents *components = [calendar components:(NSCalendarUnitYear | NSCalendarUnitMonth  | NSCalendarUnitDay | NSCalendarUnitHour) fromDate:self.timeStamp];
     [components setHour:0];
 //    NSInteger dayAsInt = [components day];
 //    NSLog(@"dayAsInt %ld", dayAsInt);
@@ -360,7 +360,7 @@
          */
         NSCalendar *calendar = [NSCalendar currentCalendar];
         
-        NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit)
+        NSDateComponents *components = [calendar components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay)
                                                    fromDate:[self timeStamp]];
         tmp = [NSString stringWithFormat:@"%ld", (long)([components year] * 10000) + ([components month]) * 100 + components.day];
 #ifdef VERBOSE

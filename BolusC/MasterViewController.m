@@ -810,7 +810,7 @@
     
     //    NSCalendar *calendar = [NSCalendar currentCalendar];
     NSCalendar *calendar = [NSCalendar autoupdatingCurrentCalendar];
-    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:theDate];
+    NSDateComponents *components = [calendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:theDate];
 //    NSInteger hourOfDay = [components hour];
     
     CGFloat hourOfDay = (CGFloat)[components hour] + (CGFloat)[components minute] /60.0;

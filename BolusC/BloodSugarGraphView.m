@@ -258,8 +258,8 @@
             CGPoint touchPosition1 = [gesture locationOfTouch:1 inView:self];  // position of second finger in view coordinates
             
             // Calculate scale parts in x- and y-direction directly (without using atan and sin and cos)
-            CGFloat distanceX = fabsf(touchPosition1.x-touchPosition0.x);              // distance between two touches in x-direction
-            CGFloat distanceY = fabsf(touchPosition1.y-touchPosition0.y);              // distance between two touches in y-direction
+            CGFloat distanceX = fabs(touchPosition1.x-touchPosition0.x);              // distance between two touches in x-direction
+            CGFloat distanceY = fabs(touchPosition1.y-touchPosition0.y);              // distance between two touches in y-direction
             CGFloat distance = sqrtf( distanceX * distanceX + distanceY * distanceY);  // distance between the two touches
             CGFloat dummy = (gesture.scale - 1.0) / distance;                          // (kind of normalized) distance between new and old touch positions (i.e. the delta)
             CGFloat gestureScaleX = 1.0 + dummy * distanceX;  // resulting scale in x-direction

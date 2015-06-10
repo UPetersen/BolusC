@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@import HealthKit;
 #import "Event.h"
 #import "Event+Extensions.h"  
 #import "BSKeyboardControls.h" // for input accessory view above the keyboard (MIT-Licence)

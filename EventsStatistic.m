@@ -181,10 +181,10 @@
 -(NSInteger) numberOfDays {
     if (!_numberOfDays) {
         
-        NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+        NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
 //        [gregorianCalendar setTimeZone:[NSTimeZone localTimeZone]];
 
-        NSDateComponents *components = [gregorianCalendar components:NSDayCalendarUnit
+        NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay
                                                             fromDate:self.firstDay
                                                               toDate:self.lastDay
                                                              options:0];
@@ -201,12 +201,12 @@
     
     // For comparisson get the date for 0:00 hours one day after the last day of the events. I.e. if the last entry in the events was today 13:45 hours, then get tomorrow 0:00 hours.
     //NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
 
     // TODO: prüfen, ob das raus kann.
 //    [calendar setTimeZone:[NSTimeZone localTimeZone]];
 //    [calendar setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
-    NSDateComponents *components = [calendar components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:self.lastDay];
+    NSDateComponents *components = [calendar components:(NSCalendarUnitEra|NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay) fromDate:self.lastDay];
     components.day++; // Add one day
     NSDate *lastDay = [calendar dateFromComponents:components];  // Next day 0:00 hours
     
