@@ -266,8 +266,8 @@ import CoreData
         let sampleType = HKSampleType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierFood)
         let options = HKQueryOptions.None
 
-        let startDate = NSDate(timeInterval: -60, sinceDate: date)
-        let endDate = NSDate(timeInterval: 60, sinceDate: date)
+        let startDate = NSDate(timeInterval: -60.0*5.0, sinceDate: date)
+        let endDate = NSDate(timeInterval: 60.0*5.0, sinceDate: date)
 
 
 //        let predicate = HKQuery.predicateForSamplesWithStartDate(date, endDate: date, options: options)
