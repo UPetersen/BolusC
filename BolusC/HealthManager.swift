@@ -15,41 +15,81 @@ import CoreData
 
   let healthKitStore:HKHealthStore = HKHealthStore()
     
-    override init() {
-        super.init()
-    }
-
   func authorizeHealthKit(completion: ((success:Bool, error:NSError!) -> Void)!)
   {
     // 1. Set the types you want to read from HK Store
-    let healthKitTypesToRead = [
-      HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierDateOfBirth),
-      HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBloodType),
-      HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight),
-      HKObjectType.workoutType(),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)
-    ]
+//    let healthKitTypesToRead = [
+//      HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierDateOfBirth),
+//      HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBloodType),
+//      HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight),
+//      HKObjectType.workoutType(),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)
+//    ]
+//    
+//    // 2. Set the types you want to write to HK Store
+//    let healthKitTypesToWrite = [
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning),
+//      HKQuantityType.workoutType(),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein),
+//      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)
+//    ]
+
+    // 1. and 2. Set the types you want to share and read from HK Store
+    let healthKitSampleTypesToShare = [
+//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose),
+//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed),
+//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates),
+//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein),
+//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning),
+        HKQuantityType.workoutType(),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)
+        ]
+        .flatMap{$0 as HKSampleType?}
     
-    // 2. Set the types you want to write to HK Store
-    let healthKitTypesToWrite = [
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMassIndex),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierActiveEnergyBurned),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning),
-      HKQuantityType.workoutType(),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein),
-      HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)
-    ]
+    let healthKitObjectTypesToRead = [
+//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose),
+//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed),
+//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates),
+//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein),
+//        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)
+        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierDateOfBirth),
+        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBloodType),
+        HKObjectType.characteristicTypeForIdentifier(HKCharacteristicTypeIdentifierBiologicalSex),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeight),
+        HKObjectType.workoutType(),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBloodGlucose),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryEnergyConsumed),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryCarbohydrates),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryProtein),
+        HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDietaryFatTotal)
+        ]
+        .flatMap{$0 as HKObjectType?}
+    
+    let healthKitTypesToShare: Set? = Set<HKSampleType>(healthKitSampleTypesToShare)
+    let healthKitTypesToRead: Set?  = Set<HKObjectType>(healthKitObjectTypesToRead)
 
     
     // 3. If the store is not available (for instance, iPad) return an error and don't go on.
@@ -62,7 +102,8 @@ import CoreData
     }
     
     // 4.  Request HealthKit authorization
-    healthKitStore.requestAuthorizationToShareTypes(Set(healthKitTypesToWrite), readTypes: Set(healthKitTypesToRead)) { (success, error) -> Void in
+    //    healthKitStore.requestAuthorizationToShareTypes(Set(healthKitTypesToWrite), readTypes: Set(healthKitTypesToRead)) { (success, error) -> Void in
+    healthKitStore.requestAuthorizationToShareTypes(healthKitTypesToShare, readTypes: healthKitTypesToRead) { (success, error) -> Void in
       if( completion != nil ){
         completion(success:success,error:error)
       }
@@ -263,7 +304,15 @@ import CoreData
     
     func readNutrientData (date: NSDate, completion: ((HKCorrelation!, NSError!) -> Void)!) {
 
-        let sampleType = HKSampleType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierFood)
+        if !HKHealthStore.isHealthDataAvailable(){
+            print("HealthKit is not available in this Device")
+            return;
+        }
+
+//        let sampleType = HKSampleType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierFood)
+        guard let sampleType = HKSampleType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierFood) else {
+            fatalError("Wrong identifier for food correlation")
+        }
         let options = HKQueryOptions.None
 
         let startDate = NSDate(timeInterval: -60.0*5.0, sinceDate: date)
@@ -272,39 +321,60 @@ import CoreData
 
 //        let predicate = HKQuery.predicateForSamplesWithStartDate(date, endDate: date, options: options)
         let predicate = HKQuery.predicateForSamplesWithStartDate(startDate, endDate: endDate, options: options)
-        println("The predicate is \(predicate)")
-        println("start date is \(startDate) and end date is \(endDate)")
+        print("The predicate is \(predicate)")
+        print("start date is \(startDate) and end date is \(endDate)")
        
         // query with completion handler (wherein another completion handler is called
+//        let sampleQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler:
+
         let sampleQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil, resultsHandler:
             { (sampleQuery, results, error ) -> Void in
                 
-                println("Bin drin")
+                print("Bin drin")
                 
                 if let queryError = error {
-                    println( "There was an error while reading the samples: \(queryError.localizedDescription)")
+                    print( "There was an error while reading the samples: \(queryError.localizedDescription)")
                     completion(nil, error)
                 }
-                
-                let foodCorrelations = results
-                    .filter {$0 is HKCorrelation}
-                    .filter {$0.correlationType == HKCorrelationType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierFood)}
-                    .map{$0 as! HKCorrelation}
-                
-                println("The food correlations \(foodCorrelations)")
-                
-                if foodCorrelations.count > 1 {
-                    println("Number of food correlation objects is \(foodCorrelations.count), which is greater than one, which should not happen.")
-                    println("Aborting program. Please check and correct your database, Uwe.")
-                    abort()
-                }
-                
-                for foodCorrelation in foodCorrelations {
-                    println("About to call completion")
 
-                    completion(foodCorrelation, nil)
-                    println("... done with call to completion")
+                if let results = results {
+                    let foodCorrelations = results
+                        .flatMap{$0 as? HKCorrelation}
+                        .filter {$0.correlationType == HKCorrelationType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierFood)! as HKCorrelationType}
+                    
+                    if foodCorrelations.count > 1 {
+                        print("Number of food correlation objects is \(foodCorrelations.count), which is greater than one, which should not happen.")
+                        print("Aborting program. Please check and correct your database, Uwe.")
+                        abort()
+                    }
+                    
+                    for foodCorrelation in foodCorrelations {
+                        print("About to call completion")
+                        
+                        completion(foodCorrelation, nil)
+                        print("... done with call to completion")
+                    }
                 }
+                
+//                let foodCorrelations = results!
+//                    .filter {$0 is HKCorrelation}
+//                    .filter {$0.correlationType == HKCorrelationType.correlationTypeForIdentifier(HKCorrelationTypeIdentifierFood)}
+//                    .map{$0 as! HKCorrelation}
+//                
+//                println("The food correlations \(foodCorrelations)")
+//                
+//                if foodCorrelations.count > 1 {
+//                    println("Number of food correlation objects is \(foodCorrelations.count), which is greater than one, which should not happen.")
+//                   printn("Aborting program. Please check and correct your database, Uwe.")
+//                    abort()
+//                }
+//                
+//                for foodCorrelation in foodCorrelations {
+//                    println("About to call completion")
+//
+//                    completion(foodCorrelation, nil)
+//                    println("... done with call to completion")
+//                }
             })
         // 5. Execute the Query
         self.healthKitStore.executeQuery(sampleQuery)
