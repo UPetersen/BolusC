@@ -487,60 +487,60 @@
 
 -(void) syncNutrientsFromHealthKitForDate:(NSDate *)date {
     
-    NSLog(@"in syncNutrients...");
-    
-    HealthManager *healthManager = [[HealthManager alloc] init];
-    [healthManager readNutrientData:date completion:^(HKCorrelation * foodCorrelation, NSError * error) {
-        NSLog(@"Bin drin ");
-        if (error != nil) {
-            NSLog(@"Error reading nutrient date from HealthKit store: %@", error);
-            return;
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            for (HKQuantitySample *object in foodCorrelation.objects) {
-                NSLog(@"Im Loop");
-                if ([object isKindOfClass:[HKQuantitySample class]]) {
-                    if (object.quantityType == [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierDietaryEnergyConsumed]) {
-                        double hugo = [object.quantity doubleValueForUnit:[HKUnit kilocalorieUnit]];
-                        NSLog(@"hugo: %f", hugo);
-                        self.event.energy = [NSNumber numberWithDouble:hugo];
-                        
-                    } else if (object.quantityType == [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierDietaryCarbohydrates]) {
-                        self.event.carb = [NSNumber numberWithDouble: [object.quantity doubleValueForUnit:[HKUnit gramUnit]]];
-                        [self.event setChuForCarb];                                                           // carb            -> chu
-                        [self.event setChuBolusForChuFactorForChu];                                           // chu, chuFactor  -> chuBolus
-                        [self.event setShortBolusForCorrectionBolusForChuBolus];
-                        
-                        
-                    } else if (object.quantityType == [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierDietaryProtein]) {
-                        self.event.protein = [NSNumber numberWithDouble: [object.quantity doubleValueForUnit:[HKUnit gramUnit]]];
-                        [self.event setFpuForFatForProtein];                                                      // fat, protein    -> fpu
-                        [self.event setFpuBolusForFpuFactorForFpu];                                           // fpuFactor, fpu  -> fpuBolus
-                        
-                    } else if (object.quantityType == [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierDietaryFatTotal]) {
-                        self.event.fat = [NSNumber numberWithDouble: [object.quantity doubleValueForUnit:[HKUnit gramUnit]]];
-                        [self.event setFpuForFatForProtein];                                                  // fat, protein    -> fpu
-                        [self.event setFpuBolusForFpuFactorForFpu];                                           // fpuFactor, fpu  -> fpuBolus
-                    }
-                }
-            }
-            [self configureView];
-        });
-    }];
+//    NSLog(@"in syncNutrients...");
+//
+//    HealthManager *healthManager = [[HealthManager alloc] init];
+//    [healthManager readNutrientData:date completion:^(HKCorrelation * foodCorrelation, NSError * error) {
+//        NSLog(@"Bin drin ");
+//        if (error != nil) {
+//            NSLog(@"Error reading nutrient date from HealthKit store: %@", error);
+//            return;
+//        }
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            for (HKQuantitySample *object in foodCorrelation.objects) {
+//                NSLog(@"Im Loop");
+//                if ([object isKindOfClass:[HKQuantitySample class]]) {
+//                    if (object.quantityType == [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierDietaryEnergyConsumed]) {
+//                        double hugo = [object.quantity doubleValueForUnit:[HKUnit kilocalorieUnit]];
+//                        NSLog(@"hugo: %f", hugo);
+//                        self.event.energy = [NSNumber numberWithDouble:hugo];
+//
+//                    } else if (object.quantityType == [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierDietaryCarbohydrates]) {
+//                        self.event.carb = [NSNumber numberWithDouble: [object.quantity doubleValueForUnit:[HKUnit gramUnit]]];
+//                        [self.event setChuForCarb];                                                           // carb            -> chu
+//                        [self.event setChuBolusForChuFactorForChu];                                           // chu, chuFactor  -> chuBolus
+//                        [self.event setShortBolusForCorrectionBolusForChuBolus];
+//
+//
+//                    } else if (object.quantityType == [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierDietaryProtein]) {
+//                        self.event.protein = [NSNumber numberWithDouble: [object.quantity doubleValueForUnit:[HKUnit gramUnit]]];
+//                        [self.event setFpuForFatForProtein];                                                      // fat, protein    -> fpu
+//                        [self.event setFpuBolusForFpuFactorForFpu];                                           // fpuFactor, fpu  -> fpuBolus
+//
+//                    } else if (object.quantityType == [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierDietaryFatTotal]) {
+//                        self.event.fat = [NSNumber numberWithDouble: [object.quantity doubleValueForUnit:[HKUnit gramUnit]]];
+//                        [self.event setFpuForFatForProtein];                                                  // fat, protein    -> fpu
+//                        [self.event setFpuBolusForFpuFactorForFpu];                                           // fpuFactor, fpu  -> fpuBolus
+//                    }
+//                }
+//            }
+//            [self configureView];
+//        });
+//    }];
 }
 
 -(void)authorizeHealthKit {
-    HealthManager *healthManager = [[HealthManager alloc] init];
-    [healthManager authorizeHealthKit:^(BOOL authorized, NSError * error) {
-        if (authorized) {
-            NSLog(@"Healthkit authorization received");
-        } else {
-            NSLog(@"Healthkit authorization denied");
-            if (error != nil) {
-                NSLog(@"Error is %@", error);
-            }
-        }
-    }];
+//    HealthManager *healthManager = [[HealthManager alloc] init];
+//    [healthManager authorizeHealthKit:^(BOOL authorized, NSError * error) {
+//        if (authorized) {
+//            NSLog(@"Healthkit authorization received");
+//        } else {
+//            NSLog(@"Healthkit authorization denied");
+//            if (error != nil) {
+//                NSLog(@"Error is %@", error);
+//            }
+//        }
+//    }];
 }
 
 
