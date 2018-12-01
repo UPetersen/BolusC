@@ -530,54 +530,55 @@
 }
 
 -(void)authorizeHealthKit {
-//    HealthManager *healthManager = [[HealthManager alloc] init];
-//    [healthManager authorizeHealthKit:^(BOOL authorized, NSError * error) {
-//        if (authorized) {
-//            NSLog(@"Healthkit authorization received");
-//        } else {
-//            NSLog(@"Healthkit authorization denied");
-//            if (error != nil) {
-//                NSLog(@"Error is %@", error);
-//            }
-//        }
-//    }];
+    HealthManager *healthManager = [[HealthManager alloc] init];
+    [healthManager authorizeHealthKitWithCompletion:^(BOOL authorized, NSError * error) {
+        if (authorized) {
+            NSLog(@"Healthkit authorization received");
+        } else {
+            NSLog(@"Healthkit authorization denied");
+            if (error != nil) {
+                NSLog(@"Error is %@", error);
+            }
+        }
+    }];
 }
 
 
-- (void)viewDidUnload {
-    [self setTextFieldBloodSugar:nil];
-    [self setTextFieldEnergy:nil];
-    [self setTextFieldCarb:nil];
-    [self setTextFieldProtein:nil];
-    [self setTextFieldFat:nil];
-    [self setCellTime:nil];
-    [self setTextFieldChuFactor:nil];
-    [self setSliderChuFactor:nil];
-    [self setCellFpuBolus:nil];
-    [self setTextFieldFpuFactor:nil];
-    [self setSliderFpuFactor:nil];
-    [self setTextFieldBasal:nil];
-    [self setCellNote:nil];
-    [self setLabelCorrectionBolus:nil];
-    [self setLabelChuBolus:nil];
-    [self setLabelShortBolus:nil];
-    [self setLabelChuBolus:nil];
-    [self setLabelFpuBolus:nil];
-    [self setLabelChu:nil];
-    [self setLabelFpu:nil];
-    [self setLabelTime:nil];
-    [self setTextFieldWeight:nil];
-    [self setTextFieldCorrectionBolus:nil];
-    [self setTextFieldCorrectionDivisor:nil];
-    [self setSliderCorrectionFactor:nil];
-    [self setTextFieldChuBolus:nil];
-    [self setTextFieldFpuBolus:nil];
-    [self setTextViewComment:nil];
-    [self setLabelDate:nil];
-    [self setKeyboardControls:nil];
 
-    [super viewDidUnload];
-}
+//- (void)viewDidUnload {
+//    [self setTextFieldBloodSugar:nil];
+//    [self setTextFieldEnergy:nil];
+//    [self setTextFieldCarb:nil];
+//    [self setTextFieldProtein:nil];
+//    [self setTextFieldFat:nil];
+//    [self setCellTime:nil];
+//    [self setTextFieldChuFactor:nil];
+//    [self setSliderChuFactor:nil];
+//    [self setCellFpuBolus:nil];
+//    [self setTextFieldFpuFactor:nil];
+//    [self setSliderFpuFactor:nil];
+//    [self setTextFieldBasal:nil];
+//    [self setCellNote:nil];
+//    [self setLabelCorrectionBolus:nil];
+//    [self setLabelChuBolus:nil];
+//    [self setLabelShortBolus:nil];
+//    [self setLabelChuBolus:nil];
+//    [self setLabelFpuBolus:nil];
+//    [self setLabelChu:nil];
+//    [self setLabelFpu:nil];
+//    [self setLabelTime:nil];
+//    [self setTextFieldWeight:nil];
+//    [self setTextFieldCorrectionBolus:nil];
+//    [self setTextFieldCorrectionDivisor:nil];
+//    [self setSliderCorrectionFactor:nil];
+//    [self setTextFieldChuBolus:nil];
+//    [self setTextFieldFpuBolus:nil];
+//    [self setTextViewComment:nil];
+//    [self setLabelDate:nil];
+//    [self setKeyboardControls:nil];
+//
+//    [super viewDidUnload];
+//}
 
 
 # pragma mark - helper methods

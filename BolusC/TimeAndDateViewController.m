@@ -81,8 +81,8 @@
 - (IBAction)pickerValueChanged:(id)sender {
 }
 
-- (void)viewDidUnload {
-    [self setPickerDateAndTime:nil];
-    [super viewDidUnload];
-}
+//- (void)viewDidUnload {
+//    [self setPickerDateAndTime:nil];
+//    [super viewDidUnload];
+//}
 @end

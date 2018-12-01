@@ -133,8 +133,8 @@
     // Initial values, later to be handled in some kind of settings
     self.timeStamp = [NSDate date];
     self.bloodSugarGoal = @84.0;  // zur Erinnerung an andere Syntax: newEvent.bloodSugarGoal = [[NSNumber alloc] initWithDouble:84.0];
-    self.correctionDivisor = @40;
-    self.chuFactor = @1.0;
+    self.correctionDivisor = @25;
+    self.chuFactor = @1.5;
     self.fpuFactor = @0.75;
     self.useBreadUnits = [[NSNumber alloc] initWithBool:NO];
 }

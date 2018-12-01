@@ -11,8 +11,9 @@ import HealthKit
 import CoreData
 //import Timepiece
 
-@objc public class HealthManager: NSObject {
-    
+//@objc public class HealthManager: NSObject {
+class HealthManager: NSObject {
+
     let healthKitStore:HKHealthStore = HKHealthStore()
     
     @objc public func authorizeHealthKit(completion: ((_ success: Bool, _ error: NSError?) -> Void)?) {
